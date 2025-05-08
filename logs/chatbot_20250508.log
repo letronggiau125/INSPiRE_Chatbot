@@ -1,0 +1,26 @@
+2025-05-08 11:18:04 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 11:25:53 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-08 11:26:19 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 11:36:00 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-08 11:36:20 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-05-08 11:36:25 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-05-08 11:36:42 - INFO - [Session: test] Processing message: Có thể mượn sách về nhà không?
+2025-05-08 11:36:50 - INFO - [Session: test] Processing message: Thời gian mượn sách là bao lâu?
+2025-05-08 11:37:21 - INFO - [Session: test] Processing message: làm thế nào để sử dụng thư viện
+2025-05-08 11:38:00 - INFO - [Session: test] Processing message: cách sử dụng máy tính thư viện
+2025-05-08 11:38:18 - INFO - [Session: test] Processing message: hướng dụng cách đặt phòng chức năng
+2025-05-08 11:38:43 - INFO - [Session: test] Processing message: hướng dẫn cách đặt phòng
+2025-05-08 11:39:03 - INFO - [Session: test] Processing message: làm thế nào để đặt phòng thư viện
+2025-05-08 11:39:33 - INFO - [Session: test] Processing message: trả sách ở đâu
+2025-05-08 11:39:44 - INFO - [Session: test] Processing message: mượn sách ở đâu
+2025-05-08 11:39:53 - INFO - [Session: test] Processing message: thời gian phục vụ hôm nay
+2025-05-08 11:40:09 - INFO - [Session: test] Processing message: thư viện có sách gì
+2025-05-08 11:40:21 - INFO - [Session: test] Processing message: thư viện có những tài liệu gì
+2025-05-08 11:40:42 - INFO - [Session: test] Processing message: sách giá trình đặt ở đâu
+2025-05-08 11:40:52 - INFO - [Session: test] Processing message: sách giáo trình
+2025-05-08 11:41:15 - INFO - [Session: test] Processing message: sách giáo trình có mượn về nhà được không
+2025-05-08 11:41:39 - INFO - [Session: test] Processing message: thành tích nổi bật của trường tôn đức thắng
+2025-05-08 11:41:59 - INFO - [Session: test] Processing message: trường đại học tôn đức thắng có tốt không
+2025-05-08 11:42:16 - INFO - [Session: test] Processing message: bạn là ai
+2025-05-08 11:42:25 - INFO - [Session: test] Processing message: thủ tướng việt nam là ai
+2025-05-08 11:42:46 - INFO - [Session: test] Processing message: hoàng xa của trung quốc phải không

@@ -1,12 +1,12 @@
 :root {
-    --primary-color: #f59f00;
+    --primary-color: #e67e22;
     --user-msg-color: #fff3bf;
     --bot-msg-color: #ffffff;
     --error-color: #dc3545;
     --timestamp-color: #6c757d;
     --counter-color: #6c757d;
-    --background-main: #fff9ec;
-    --background-accent: #f59f00;
+    --background-main: rgba(255, 255, 255, 0.97);
+    --background-accent: #e67e22;
 }
 
 body {
@@ -142,7 +142,7 @@ body {
 }
 
 .bot-message {
-    background: #fffbe6;
+    background:#fdf2e9;
     margin-right: auto;
     border-bottom-left-radius: 5px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
