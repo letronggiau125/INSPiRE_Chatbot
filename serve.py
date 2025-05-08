@@ -24,8 +24,18 @@ load_dotenv()
 db_path = os.getenv('DB_PATH', './chroma_db')
 
 # 🏗️ Initialize Flask app
-app = Flask(__name__)
-CORS(app)
+app = Flask(__name__, 
+    static_url_path='/static',
+    static_folder='static',
+    template_folder='templates'
+)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://127.0.0.1:5000", "http://localhost:5000"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Accept"]
+    }
+})
 
 # Setup logging
 logger = setup_logger()
@@ -228,7 +238,6 @@ def get_response(session_id: str, user_message: str) -> ChatResponse:
                 confidence=0.0
             )
         
-        # The following semantic_router.route logic is removed because the method does not exist
         # Fallback to chatbot
         response = chatbot.chat(session_id, user_message)
         return ChatResponse(
@@ -244,21 +253,35 @@ def get_response(session_id: str, user_message: str) -> ChatResponse:
 @app.route("/")
 def home():
     """Serve the main chat interface."""
+    logger.info("Serving home page")
     return render_template("index.html")
+
+@app.route("/static/<path:filename>")
+def serve_static(filename):
+    """Serve static files."""
+    logger.info(f"Serving static file: {filename}")
+    return send_from_directory(app.static_folder, filename)
 
 @app.route("/chat", methods=["POST"])
 @rate_limit
 def chat():
     """Handle chat requests."""
     try:
+        logger.info("Received chat request")
         data = request.get_json()
+        logger.info(f"Request data: {data}")
+        
         user_message = data.get("message", "").strip()
         session_id = data.get("session_id", "default_session")
         
         if not user_message:
+            logger.warning("Empty message received")
             return jsonify({"error": Config.MESSAGES['empty_message']}), 400
         
+        logger.info(f"Processing message: {user_message} for session: {session_id}")
         response = get_response(session_id, user_message)
+        logger.info(f"Generated response: {response.to_dict()}")
+        
         return jsonify(response.to_dict())
         
     except Exception as e:

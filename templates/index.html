@@ -5,28 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <title>Chatbot Thư viện TDTU</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/marked/lib/marked.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="header">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="feature-icon">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-</svg>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="feature-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+        </svg>
         <h2>Chatbot Thư viện TDTU</h2>
     </div>
 
     <div id="chat-container">
         <div class="welcome-message">
             <h3>👋 Xin chào! Tôi là chatbot của Thư viện TDTU</h3>
-                <h5>Tôi có thể giúp bạn trả lời các câu hỏi về: </h5>
-                  <ul class="welcome-message-scrip"> 
-                    <li> Thời gian hoạt động </li>
-                     <li> Quy định mượn trả</li>
-                     <li> Dịch vụ thư viện</li>
-                     <li> Và nhiều thông tin khác</li>
-                    </ul>
+            <h5>Tôi có thể giúp bạn trả lời các câu hỏi về: </h5>
+            <ul class="welcome-message-scrip"> 
+                <li> Thời gian hoạt động </li>
+                <li> Quy định mượn trả</li>
+                <li> Dịch vụ thư viện</li>
+                <li> Và nhiều thông tin khác</li>
+            </ul>
             <div class="suggested-questions">
                 <button class="suggested-question">Thư viện mở cửa lúc mấy giờ?</button>
                 <button class="suggested-question">Làm thế nào để mượn sách?</button>
@@ -39,7 +38,7 @@
             <div class="input-container">
                 <input type="text" id="user-input" placeholder="Nhập câu hỏi của bạn..." maxlength="500" />
                 <span class="char-counter">0/500</span>
-                <button id="send-button" onclick="sendMessage()">
+                <button id="send-button">
                     <span>Gửi</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>

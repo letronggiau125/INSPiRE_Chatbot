@@ -24,3 +24,119 @@
 2025-05-08 11:42:16 - INFO - [Session: test] Processing message: bạn là ai
 2025-05-08 11:42:25 - INFO - [Session: test] Processing message: thủ tướng việt nam là ai
 2025-05-08 11:42:46 - INFO - [Session: test] Processing message: hoàng xa của trung quốc phải không
+2025-05-08 14:39:10 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 14:45:30 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 14:46:00 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 14:52:43 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 15:06:18 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 15:13:31 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 15:13:59 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 15:21:52 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 15:30:13 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 15:39:52 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 15:45:57 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 15:46:19 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 15:51:53 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 15:52:05 - INFO - [Session: no_session] Received chat request
+2025-05-08 15:52:05 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Có quy định gì về mượn sách tại thư viện không?'}
+2025-05-08 15:52:05 - INFO - [Session: no_session] Processing message: Có quy định gì về mượn sách tại thư viện không? for session: test
+2025-05-08 15:52:05 - INFO - [Session: test] Processing message: Có quy định gì về mượn sách tại thư viện không?
+2025-05-08 15:52:05 - INFO - [Session: no_session] Generated response: {'response': 'Tài liệu đọc tại chỗ - Sinh viên, sinh viên quốc tế: Số lượng: 02 tài liệu/lượt mượn Thời gian mượn: 01 ngày - Giảng viên, viên chức, giảng viên người nước ngoài, học viên sau đại học: Số lượng: 03 tài liệu/lượt mượn Thời gian mượn: 01 ngày', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T15:52:05.393445'}
+2025-05-08 15:52:07 - INFO - [Session: no_session] Received chat request
+2025-05-08 15:52:07 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Làm thế nào để mượn sách?'}
+2025-05-08 15:52:07 - INFO - [Session: no_session] Processing message: Làm thế nào để mượn sách? for session: test
+2025-05-08 15:52:07 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-05-08 15:52:07 - INFO - [Session: no_session] Generated response: {'response': 'Đối với sách cho mượn về, bạn đọc tự thực hiện giao dịch tại: - Mượn sách: Trạm mượn sách tự động, Lầu 1', 'category': 'muon_tra', 'confidence': 0.98, 'timestamp': '2025-05-08T15:52:07.790604'}
+2025-05-08 15:52:09 - INFO - [Session: no_session] Received chat request
+2025-05-08 15:52:09 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Thư viện mở cửa lúc mấy giờ?'}
+2025-05-08 15:52:09 - INFO - [Session: no_session] Processing message: Thư viện mở cửa lúc mấy giờ? for session: test
+2025-05-08 15:52:09 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-05-08 15:52:09 - INFO - [Session: no_session] Generated response: {'response': 'Thư viện mở cửa từ thứ Hai đến Chủ nhật. Cụ thể như sau: từ thứ Hai đến thứ Sáu: Thư viện mờ cửa phục vụ từ 7h30 đến 20h00; sau 17h00 thư viện chỉ phục vụ ở tầng 1, 2 và tầng Hầm. Cuối tuần thời gian phục vụ từ 7h30 đến 17h00, Thứ 7, thư viện chỉ phục vụ ở tầng 1,2, và 4, còn Chủ Nhật chỉ phục vụ ở tầng 1 và 2.', 'category': 'quydinh', 'confidence': 0.99, 'timestamp': '2025-05-08T15:52:09.874943'}
+2025-05-08 15:53:10 - INFO - [Session: no_session] Received chat request
+2025-05-08 15:53:10 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Mượn sách ở thư viện như thế nào?'}
+2025-05-08 15:53:10 - INFO - [Session: no_session] Processing message: Mượn sách ở thư viện như thế nào? for session: test
+2025-05-08 15:53:10 - INFO - [Session: test] Processing message: Mượn sách ở thư viện như thế nào?
+2025-05-08 15:53:10 - INFO - [Session: no_session] Generated response: {'response': 'Đối với sách cho mượn về, bạn đọc tự thực hiện giao dịch tại: - Mượn sách: Trạm mượn sách tự động, Lầu 1', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T15:53:10.364113'}
+2025-05-08 15:53:46 - INFO - [Session: no_session] Received chat request
+2025-05-08 15:53:46 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Có quy định gì về mượn sách tại thư viện không?'}
+2025-05-08 15:53:46 - INFO - [Session: no_session] Processing message: Có quy định gì về mượn sách tại thư viện không? for session: test
+2025-05-08 15:53:46 - INFO - [Session: test] Processing message: Có quy định gì về mượn sách tại thư viện không?
+2025-05-08 15:53:46 - INFO - [Session: no_session] Generated response: {'response': 'Tài liệu đọc tại chỗ - Sinh viên, sinh viên quốc tế: Số lượng: 02 tài liệu/lượt mượn Thời gian mượn: 01 ngày - Giảng viên, viên chức, giảng viên người nước ngoài, học viên sau đại học: Số lượng: 03 tài liệu/lượt mượn Thời gian mượn: 01 ngày', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T15:53:46.380893'}
+2025-05-08 15:54:57 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 15:58:00 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 16:04:49 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 16:05:12 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-08 16:12:41 - INFO - [Session: no_session] Starting server on 0.0.0.0:5000
+2025-05-08 16:12:41 - INFO - [Session: no_session] Serving home page
+2025-05-08 16:13:11 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:13:11 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Thư viện mở cửa lúc mấy giờ?'}
+2025-05-08 16:13:11 - INFO - [Session: no_session] Processing message: Thư viện mở cửa lúc mấy giờ? for session: test
+2025-05-08 16:13:11 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-05-08 16:13:12 - INFO - [Session: no_session] Generated response: {'response': 'Thư viện mở cửa từ thứ Hai đến Chủ nhật. Cụ thể như sau: từ thứ Hai đến thứ Sáu: Thư viện mờ cửa phục vụ từ 7h30 đến 20h00; sau 17h00 thư viện chỉ phục vụ ở tầng 1, 2 và tầng Hầm. Cuối tuần thời gian phục vụ từ 7h30 đến 17h00, Thứ 7, thư viện chỉ phục vụ ở tầng 1,2, và 4, còn Chủ Nhật chỉ phục vụ ở tầng 1 và 2.', 'category': 'quydinh', 'confidence': 0.99, 'timestamp': '2025-05-08T16:13:12.243856'}
+2025-05-08 16:13:27 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:13:27 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Có quy định gì về mượn sách tại thư viện không?'}
+2025-05-08 16:13:27 - INFO - [Session: no_session] Processing message: Có quy định gì về mượn sách tại thư viện không? for session: test
+2025-05-08 16:13:27 - INFO - [Session: test] Processing message: Có quy định gì về mượn sách tại thư viện không?
+2025-05-08 16:13:27 - INFO - [Session: no_session] Generated response: {'response': 'Tài liệu đọc tại chỗ - Sinh viên, sinh viên quốc tế: Số lượng: 02 tài liệu/lượt mượn Thời gian mượn: 01 ngày - Giảng viên, viên chức, giảng viên người nước ngoài, học viên sau đại học: Số lượng: 03 tài liệu/lượt mượn Thời gian mượn: 01 ngày', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T16:13:27.724521'}
+2025-05-08 16:14:28 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:14:28 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Có quy định gì về mượn sách tại thư viện không?'}
+2025-05-08 16:14:28 - INFO - [Session: no_session] Processing message: Có quy định gì về mượn sách tại thư viện không? for session: test
+2025-05-08 16:14:28 - INFO - [Session: test] Processing message: Có quy định gì về mượn sách tại thư viện không?
+2025-05-08 16:14:28 - INFO - [Session: no_session] Generated response: {'response': 'Tài liệu đọc tại chỗ - Sinh viên, sinh viên quốc tế: Số lượng: 02 tài liệu/lượt mượn Thời gian mượn: 01 ngày - Giảng viên, viên chức, giảng viên người nước ngoài, học viên sau đại học: Số lượng: 03 tài liệu/lượt mượn Thời gian mượn: 01 ngày', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T16:14:28.224762'}
+2025-05-08 16:15:39 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:15:39 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Làm thế nào để mượn sách?'}
+2025-05-08 16:15:39 - INFO - [Session: no_session] Processing message: Làm thế nào để mượn sách? for session: test
+2025-05-08 16:15:39 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-05-08 16:15:40 - INFO - [Session: no_session] Generated response: {'response': 'Đối với sách cho mượn về, bạn đọc tự thực hiện giao dịch tại: - Mượn sách: Trạm mượn sách tự động, Lầu 1', 'category': 'muon_tra', 'confidence': 0.98, 'timestamp': '2025-05-08T16:15:40.351250'}
+2025-05-08 16:15:42 - INFO - [Session: no_session] Serving home page
+2025-05-08 16:20:07 - INFO - [Session: no_session] Serving home page
+2025-05-08 16:20:09 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:20:09 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Làm thế nào để mượn sách?'}
+2025-05-08 16:20:09 - INFO - [Session: no_session] Processing message: Làm thế nào để mượn sách? for session: test
+2025-05-08 16:20:09 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-05-08 16:20:11 - INFO - [Session: no_session] Generated response: {'response': 'Đối với sách cho mượn về, bạn đọc tự thực hiện giao dịch tại: - Mượn sách: Trạm mượn sách tự động, Lầu 1', 'category': 'muon_tra', 'confidence': 0.98, 'timestamp': '2025-05-08T16:20:11.390970'}
+2025-05-08 16:20:17 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:20:17 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Mượn sách ở thư viện như thế nào?'}
+2025-05-08 16:20:17 - INFO - [Session: no_session] Processing message: Mượn sách ở thư viện như thế nào? for session: test
+2025-05-08 16:20:17 - INFO - [Session: test] Processing message: Mượn sách ở thư viện như thế nào?
+2025-05-08 16:20:17 - INFO - [Session: no_session] Generated response: {'response': 'Đối với sách cho mượn về, bạn đọc tự thực hiện giao dịch tại: - Mượn sách: Trạm mượn sách tự động, Lầu 1', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T16:20:17.516060'}
+2025-05-08 16:20:19 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:20:19 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Có quy định gì về mượn sách tại thư viện không?'}
+2025-05-08 16:20:19 - INFO - [Session: no_session] Processing message: Có quy định gì về mượn sách tại thư viện không? for session: test
+2025-05-08 16:20:19 - INFO - [Session: test] Processing message: Có quy định gì về mượn sách tại thư viện không?
+2025-05-08 16:20:19 - INFO - [Session: no_session] Generated response: {'response': 'Tài liệu đọc tại chỗ - Sinh viên, sinh viên quốc tế: Số lượng: 02 tài liệu/lượt mượn Thời gian mượn: 01 ngày - Giảng viên, viên chức, giảng viên người nước ngoài, học viên sau đại học: Số lượng: 03 tài liệu/lượt mượn Thời gian mượn: 01 ngày', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T16:20:19.954469'}
+2025-05-08 16:20:26 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:20:26 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Thư viện mở cửa lúc mấy giờ?'}
+2025-05-08 16:20:26 - INFO - [Session: no_session] Processing message: Thư viện mở cửa lúc mấy giờ? for session: test
+2025-05-08 16:20:26 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-05-08 16:20:27 - INFO - [Session: no_session] Generated response: {'response': 'Thư viện mở cửa từ thứ Hai đến Chủ nhật. Cụ thể như sau: từ thứ Hai đến thứ Sáu: Thư viện mờ cửa phục vụ từ 7h30 đến 20h00; sau 17h00 thư viện chỉ phục vụ ở tầng 1, 2 và tầng Hầm. Cuối tuần thời gian phục vụ từ 7h30 đến 17h00, Thứ 7, thư viện chỉ phục vụ ở tầng 1,2, và 4, còn Chủ Nhật chỉ phục vụ ở tầng 1 và 2.', 'category': 'quydinh', 'confidence': 0.99, 'timestamp': '2025-05-08T16:20:27.373707'}
+2025-05-08 16:21:42 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:21:42 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'trả sách ở đâu'}
+2025-05-08 16:21:42 - INFO - [Session: no_session] Processing message: trả sách ở đâu for session: test
+2025-05-08 16:21:42 - INFO - [Session: test] Processing message: trả sách ở đâu
+2025-05-08 16:21:42 - INFO - [Session: no_session] Generated response: {'response': 'Đối với sách cho mượn về bạn đọc trả sách tại Trạm trả sách tự động, Tầng trệt', 'category': 'muon_tra', 'confidence': 1.0, 'timestamp': '2025-05-08T16:21:42.174195'}
+2025-05-08 16:21:57 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:21:57 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'nhà vệ sinh ở đâu vậy'}
+2025-05-08 16:21:57 - INFO - [Session: no_session] Processing message: nhà vệ sinh ở đâu vậy for session: test
+2025-05-08 16:21:57 - INFO - [Session: test] Processing message: nhà vệ sinh ở đâu vậy
+2025-05-08 16:21:58 - INFO - [Session: no_session] Generated response: {'response': 'Nhà vệ sinh được bố trí tại tất cả các tầng từ Lầu 1 đến Lầu 6 (ngoại trừ khu vực hầm lửng) trong tòa nhà Thư viện.', 'category': 'lienhe', 'confidence': 1.0, 'timestamp': '2025-05-08T16:21:58.264050'}
+2025-05-08 16:22:17 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:22:17 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'làm thế nào để tra cứu tài liệu'}
+2025-05-08 16:22:17 - INFO - [Session: no_session] Processing message: làm thế nào để tra cứu tài liệu for session: test
+2025-05-08 16:22:17 - INFO - [Session: test] Processing message: làm thế nào để tra cứu tài liệu
+2025-05-08 16:22:18 - INFO - [Session: no_session] Generated response: {'response': "Thủ tục mượn tài liệu đọc tại chỗ - B1: Tra cứu và chọn tài liệu trong kho - B2: Sử dụng tài liệu - B3: Trả tài liệu sau khi sử dụng xong tại 'Xe trả tài liệu'", 'category': 'muon_tra', 'confidence': 0.75, 'timestamp': '2025-05-08T16:22:18.344319'}
+2025-05-08 16:22:37 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:22:37 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'làm sao biết sách có ở thư viện hay không'}
+2025-05-08 16:22:37 - INFO - [Session: no_session] Processing message: làm sao biết sách có ở thư viện hay không for session: test
+2025-05-08 16:22:37 - INFO - [Session: test] Processing message: làm sao biết sách có ở thư viện hay không
+2025-05-08 16:22:37 - INFO - [Session: no_session] Generated response: {'response': "Thủ tục mượn tài liệu đọc tại chỗ - B1: Tra cứu và chọn tài liệu trong kho - B2: Sử dụng tài liệu - B3: Trả tài liệu sau khi sử dụng xong tại 'Xe trả tài liệu'", 'category': 'muon_tra', 'confidence': 0.86, 'timestamp': '2025-05-08T16:22:37.672088'}
+2025-05-08 16:23:26 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:23:26 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'Thư viện mở cửa lúc mấy giờ?'}
+2025-05-08 16:23:26 - INFO - [Session: no_session] Processing message: Thư viện mở cửa lúc mấy giờ? for session: test
+2025-05-08 16:23:26 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-05-08 16:23:27 - INFO - [Session: no_session] Generated response: {'response': 'Thư viện mở cửa từ thứ Hai đến Chủ nhật. Cụ thể như sau: từ thứ Hai đến thứ Sáu: Thư viện mờ cửa phục vụ từ 7h30 đến 20h00; sau 17h00 thư viện chỉ phục vụ ở tầng 1, 2 và tầng Hầm. Cuối tuần thời gian phục vụ từ 7h30 đến 17h00, Thứ 7, thư viện chỉ phục vụ ở tầng 1,2, và 4, còn Chủ Nhật chỉ phục vụ ở tầng 1 và 2.', 'category': 'quydinh', 'confidence': 0.99, 'timestamp': '2025-05-08T16:23:27.062444'}
+2025-05-08 16:23:45 - INFO - [Session: no_session] Received chat request
+2025-05-08 16:23:45 - INFO - [Session: no_session] Request data: {'session_id': 'test', 'message': 'chủ nhật thư viện mấy giờ đóng cửa'}
+2025-05-08 16:23:45 - INFO - [Session: no_session] Processing message: chủ nhật thư viện mấy giờ đóng cửa for session: test
+2025-05-08 16:23:45 - INFO - [Session: test] Processing message: chủ nhật thư viện mấy giờ đóng cửa
+2025-05-08 16:23:46 - INFO - [Session: no_session] Generated response: {'response': 'Thư viện mở cửa từ thứ Hai đến Chủ nhật. Cụ thể như sau: từ thứ Hai đến thứ Sáu: Thư viện mờ cửa phục vụ từ 7h30 đến 20h00; sau 17h00 thư viện chỉ phục vụ ở tầng 1, 2 và tầng Hầm. Cuối tuần thời gian phục vụ từ 7h30 đến 17h00, Thứ 7, thư viện chỉ phục vụ ở tầng 1,2, và 4, còn Chủ Nhật chỉ phục vụ ở tầng 1 và 2.', 'category': 'quydinh', 'confidence': 0.86, 'timestamp': '2025-05-08T16:23:46.017142'}

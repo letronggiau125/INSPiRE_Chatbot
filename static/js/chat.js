@@ -120,24 +120,34 @@ class ChatApp {
         const loadingDiv = this.showLoading();
 
         try {
-            const response = await fetch("http://127.0.0.1:5001/chat", {
+            const response = await fetch("/chat", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
                 body: JSON.stringify({ 
                     session_id: "test", 
                     message: message 
                 })
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
             loadingDiv.remove();
 
             if (data.error) {
                 this.showError(data.error);
-            } else {
+            } else if (data.response) {
                 this.chatBox.appendChild(this.createMessageElement(data.response));
+            } else {
+                this.showError("Không nhận được phản hồi từ máy chủ");
             }
         } catch (error) {
+            console.error("Chat error:", error);
             loadingDiv.remove();
             this.showError("Không thể kết nối với máy chủ. Vui lòng thử lại sau.");
         } finally {
