@@ -1,0 +1,44 @@
+2025-04-18 10:34:47 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-18 10:35:32 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-18 10:35:51 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-18 10:36:44 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-18 10:37:40 - INFO - [Session: test] Processing message: Thủ tục mượn tài liệu đọc tại chỗ được thực hiện như thế nào?
+2025-04-18 10:38:07 - INFO - [Session: test] Processing message: Quy định về số ngày tăng thêm khi thực hiện lệnh gia hạn tài liệu cho mượn về?
+2025-04-18 10:38:22 - INFO - [Session: test] Processing message: Khóa luận/Đồ án/Luận văn/luận án/Đề tài nghiên cứu khoa học có cho mượn về nhà không?
+2025-04-18 10:38:24 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-18 10:38:31 - INFO - [Session: test] Processing message: Đặt trước tài liệu trực tuyến được thực hiện như thế nào?
+2025-04-18 10:38:32 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-18 10:38:42 - INFO - [Session: test] Processing message: Thủ tục mượn tài liệu môn học được thực hiện như thế nào?
+2025-04-18 10:39:07 - INFO - [Session: test] Processing message: Tôi làm mất sách của Thư viện, muốn đền sách thì đền như thế nào?
+2025-04-18 10:39:19 - INFO - [Session: test] Processing message: Vị trí để trả tài liệu đọc tại chỗ ở đâu?
+2025-04-18 10:39:41 - INFO - [Session: test] Processing message: Tôi có thể gửi túi xách, đồ dùng cá nhân ở đâu?
+2025-04-18 10:39:47 - INFO - [Session: test] Processing message: Khu vực học qua đêm ở đâu? Thời gian hoạt động? Đăng ký như thế nào?
+2025-04-18 10:39:57 - INFO - [Session: test] Processing message: Liên hệ với ai và ở đâu để làm lại Thẻ thư viện đã bị mất?
+2025-04-18 10:40:07 - INFO - [Session: test] Processing message: Liên hệ với ai và ở đâu để được cấp Tài khoản Thư viện?
+2025-04-18 10:40:22 - INFO - [Session: test] Processing message: Nơi mượn và trả sách cho mượn về?
+2025-04-18 10:40:32 - INFO - [Session: test] Processing message: Tìm lại tài sản bị thất lạc thì cần liên lạc với ai? Ở đâu?
+2025-04-18 10:40:33 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-18 14:18:51 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-18 14:19:36 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-18 14:20:00 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-18 14:20:53 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-18 14:21:01 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-18 14:21:31 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-18 14:21:33 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-04-18 14:21:51 - INFO - [Session: test] Processing message: trả sách
+2025-04-18 14:22:10 - INFO - [Session: test] Processing message: mượn sách
+2025-04-18 14:22:17 - INFO - [Session: test] Processing message: cách mượn sách
+2025-04-18 14:22:25 - INFO - [Session: test] Processing message: mượn sách như thế nào
+2025-04-18 14:22:48 - INFO - [Session: test] Processing message: tài sản bị mất
+2025-04-18 14:22:49 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-18 14:23:10 - INFO - [Session: test] Processing message: em bị mất đồ
+2025-04-18 14:23:35 - INFO - [Session: test] Processing message: nhà vệ sinh ở đâu
+2025-04-18 14:23:57 - INFO - [Session: test] Processing message: hôm nay thư viện có mở không
+2025-04-18 14:24:46 - INFO - [Session: test] Processing message: thư viện có cho giáo trình mượn về nhà không
+2025-04-18 14:24:55 - INFO - [Session: test] Processing message: giáo trình
+2025-04-18 14:24:55 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-18 14:25:06 - INFO - [Session: test] Processing message: cd
+2025-04-18 14:25:10 - INFO - [Session: test] Processing message: cd/dvd
+2025-04-18 14:25:13 - INFO - [Session: test] Processing message: mượn cd
+2025-04-18 14:26:03 - INFO - [Session: test] Processing message: khóa luận
+2025-04-18 14:26:14 - INFO - [Session: test] Processing message: mượn khóa luận

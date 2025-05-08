@@ -1,0 +1,80 @@
+2025-04-28 14:19:47 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-28 14:21:20 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-28 14:21:54 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-28 14:23:33 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-28 14:23:39 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-28 14:23:39 - ERROR - [Session: test] Error processing message: 'FAQMatcher' object has no attribute 'get_best_response' | Additional context: {'exc_info': True}
+2025-04-28 14:23:42 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-04-28 14:23:42 - ERROR - [Session: test] Error processing message: 'FAQMatcher' object has no attribute 'get_best_response' | Additional context: {'exc_info': True}
+2025-04-28 14:23:53 - INFO - [Session: test] Processing message: mượn sách tiếng anh
+2025-04-28 14:23:53 - ERROR - [Session: test] Error processing message: 'FAQMatcher' object has no attribute 'get_best_response' | Additional context: {'exc_info': True}
+2025-04-28 14:24:03 - INFO - [Session: test] Processing message: Có thể mượn sách về nhà không?
+2025-04-28 14:24:03 - ERROR - [Session: test] Error processing message: 'FAQMatcher' object has no attribute 'get_best_response' | Additional context: {'exc_info': True}
+2025-04-28 14:24:06 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-28 14:24:06 - ERROR - [Session: test] Error processing message: 'FAQMatcher' object has no attribute 'get_best_response' | Additional context: {'exc_info': True}
+2025-04-28 14:32:44 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-28 14:34:05 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-28 14:34:29 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-28 14:35:50 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-28 14:36:02 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-28 14:36:05 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-28 14:36:23 - INFO - [Session: test] Processing message: trả sách như thế nào?
+2025-04-28 14:36:44 - INFO - [Session: test] Processing message: thời gian hoạt động với thư viện
+2025-04-28 14:36:44 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-28 14:37:24 - INFO - [Session: test] Processing message: tạo tài khoản turnitin
+2025-04-28 14:37:24 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-28 14:37:38 - INFO - [Session: test] Processing message: Liên hệ với ai và ở đâu để được cấp Tài khoản Thư viện?
+2025-04-28 14:37:45 - INFO - [Session: test] Processing message: Liên hệ với ai và ở đâu để được cấp Tài khoản Thư viện?
+2025-04-28 14:37:52 - INFO - [Session: test] Processing message: Nơi mượn và trả sách cho mượn về?
+2025-04-28 14:38:00 - INFO - [Session: test] Processing message: Làm thế nào để tham gia lớp tập huấn sử dụng thư viện?
+2025-04-28 14:38:09 - INFO - [Session: test] Processing message: Thủ tục mượn máy tính của thư viện được thực hiện như thế nào?
+2025-04-28 14:41:28 - INFO - [Session: test] Processing message: xin chào
+2025-04-28 14:41:29 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-28 14:41:46 - INFO - [Session: test] Processing message: quy trình mượn sách ở thư viện
+2025-04-28 14:41:47 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-28 14:41:52 - INFO - [Session: test] Processing message: Có thể mượn sách về nhà không?
+2025-04-28 14:41:52 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-28 14:57:45 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-28 14:59:14 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-28 14:59:41 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-28 15:00:56 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-28 15:01:02 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-28 15:01:05 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-04-28 15:01:08 - INFO - [Session: test] Processing message: Có thể mượn sách về nhà không?
+2025-04-28 15:01:11 - INFO - [Session: test] Processing message: Thời gian mượn sách là bao lâu?
+2025-04-28 15:01:30 - INFO - [Session: test] Processing message: in tài liệu ở đâu
+2025-04-28 15:01:42 - INFO - [Session: test] Processing message: scan tài liệu thế nào
+2025-04-28 15:02:02 - INFO - [Session: test] Processing message: xin chào
+2025-04-28 15:02:13 - INFO - [Session: test] Processing message: bạn có thích đọc sách không?
+2025-04-28 15:02:28 - INFO - [Session: test] Processing message: tại tài khoản turnitin
+2025-04-28 15:03:01 - INFO - [Session: test] Processing message: Thư viện có tạo tài khoản Turnitin không?
+2025-04-28 15:03:44 - INFO - [Session: test] Processing message: nhà vệ sinh ở đâu
+2025-04-28 15:03:59 - INFO - [Session: test] Processing message: hôm nay thư viện có mở cửa không
+2025-04-28 15:04:11 - INFO - [Session: test] Processing message: giờ hoạt động
+2025-04-28 15:04:39 - INFO - [Session: test] Processing message: trễ hạn trả sách
+2025-04-28 15:05:09 - INFO - [Session: test] Processing message: ai là thủ tướng việt nam
+2025-04-28 15:05:20 - INFO - [Session: test] Processing message: hoàng xa trường xa
+2025-04-28 15:05:57 - INFO - [Session: test] Processing message: Trường hợp tôi lỡ gác chân lên bàn, ghế hoặc ngủ trong thư viện, tôi có bị xử phạt gì không?
+2025-04-28 15:06:11 - INFO - [Session: test] Processing message: Locker Area?
+2025-04-28 15:06:18 - INFO - [Session: test] Processing message: Where is the Moonlighting Area? What are the opening hours? How to reserve a seat?
+2025-04-28 15:06:30 - INFO - [Session: test] Processing message: How to reserve a seat
+2025-04-28 15:10:49 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-28 15:11:02 - INFO - [Session: test] Processing message: Thời gian mượn sách là bao lâu?
+2025-04-28 15:11:05 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-04-28 15:11:09 - INFO - [Session: test] Processing message: Có thể mượn sách về nhà không?
+2025-04-28 15:11:33 - INFO - [Session: test] Processing message: hướng dẫn đặt phòng
+2025-04-28 15:11:44 - INFO - [Session: test] Processing message: phòng chức năng
+2025-04-28 15:12:10 - INFO - [Session: test] Processing message: đăng ký phòng
+2025-04-28 15:12:22 - INFO - [Session: test] Processing message: đăng ký phòng chức năng
+2025-04-28 15:12:37 - INFO - [Session: test] Processing message: làm thế nào để đăng ký phòng chức năng
+2025-04-28 15:13:09 - INFO - [Session: test] Processing message: Thủ tục đăng ký mượn phòng tại Thư viện được thực hiện như thế  nào?
+2025-04-28 15:14:36 - INFO - [Session: test] Processing message: thư viện có đẹp không
+2025-04-28 15:15:17 - INFO - [Session: test] Processing message: phí sử dụng máy tính
+2025-04-28 15:18:08 - INFO - [Session: test] Processing message: Thông tin về các phần mềm cài đặt trong máy tính do thư viện cung cấp được niêm yết ở đâu?
+2025-04-28 15:19:53 - INFO - [Session: test] Processing message: Khi có thắc mắc liên quan đến dịch vụ sử dụng máy tính thư viện, tôi cần liên hệ với ai? Ở đâu?
+2025-04-28 15:20:37 - INFO - [Session: test] Processing message: Tài khoản đăng nhập sử dụng máy tính của tôi là gì?
+2025-04-28 15:30:01 - INFO - [Session: test] Processing message: Vị trí để trả tài liệu đọc tại chỗ ở đâu?
+2025-04-28 15:30:55 - INFO - [Session: test] Processing message: Tôi là cựu sinh viên của TDTU (đã tốt nghiệp ra trường), tôi có nhu cầu được tiếp tục sử dụng thư viện thì có được cấp phép không? Đề được cấp quyền sử dụng Thư viện thì tôi cần thực hiện thủ tục gì?
+2025-04-28 15:31:29 - INFO - [Session: test] Processing message: Tôi có được can thiệp vào việc quét trùng lặp này?
+2025-04-28 15:31:41 - INFO - [Session: test] Processing message: Trường hợp tôi không có thẻ sinh viên chính thức (vẫn đang dùng thẻ giấy/thẻ tạm/ phiếu báo mất thẻ) thì tôi có thể sử dụng dịch vụ mượn về nhà được không?
+2025-04-28 15:32:04 - INFO - [Session: test] Processing message: Trường hợp tôi không có thẻ sinh viên chính thức thì tôi có thể sử dụng dịch vụ mượn về nhà được không?

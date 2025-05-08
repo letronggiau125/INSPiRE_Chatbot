@@ -1,0 +1,33 @@
+2025-05-06 11:04:38 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-06 11:08:55 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-06 11:09:29 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-06 11:13:58 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-06 11:19:33 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-05-06 11:19:36 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-05-06 11:20:01 - INFO - [Session: test] Processing message: cho em hỏi thủ tục mượn máy tính
+2025-05-06 11:20:16 - INFO - [Session: test] Processing message: thời gian sử dụng máy tính như thế nào
+2025-05-06 11:20:58 - INFO - [Session: test] Processing message: mật khẩu wifi thư viện
+2025-05-06 11:21:24 - INFO - [Session: test] Processing message: em là sinh viên muốn sử dụng wifi thư viện thì làm sao
+2025-05-06 11:21:39 - INFO - [Session: test] Processing message: cách đăng nhập wifi bằng laptop
+2025-05-06 11:22:01 - INFO - [Session: test] Processing message: cách truy cập wifi bằng điền thoại
+2025-05-06 11:27:57 - INFO - [Session: test] Processing message: Tôi có thể tìm headphone ở đâu trong thư viện
+2025-05-06 11:28:16 - INFO - [Session: test] Processing message: Tôi có thể sử dụng tai nghe trong thư viện
+2025-05-06 11:28:32 - INFO - [Session: test] Processing message: Thư viện bố trí tai nghe ở những tầng nào?
+2025-05-06 11:28:46 - INFO - [Session: test] Processing message: Tôi có thể mượn headphone từ thư viện được không?
+2025-05-06 11:28:58 - INFO - [Session: test] Processing message: Làm thế nào để tiếp cận tai nghe tại thư viện?
+2025-05-06 11:30:05 - INFO - [Session: test] Processing message: Tôi muốn đặt mượn sách online thì làm như thế nào
+2025-05-06 11:30:59 - INFO - [Session: test] Processing message: Tôi thấy xe Book Trolley là để làm gì?
+2025-05-06 11:31:11 - INFO - [Session: test] Processing message: Có phải trả tài liệu đọc tại chỗ tại tầng 1 không?
+2025-05-06 11:31:26 - INFO - [Session: test] Processing message: Thư viện bố trí nơi trả tài liệu đọc
+2025-05-06 13:14:57 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-06 13:19:22 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-06 13:19:45 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-06 13:24:41 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-06 13:25:52 - INFO - [Session: test] Processing message: tìm tài liệu môn học
+2025-05-06 13:26:08 - INFO - [Session: test] Processing message: tìm tài liệu môn học theo tên giảng viên
+2025-05-06 13:26:36 - INFO - [Session: test] Processing message: Mượn tài liệu môn học bản in cần làm gì
+2025-05-06 13:27:29 - INFO - [Session: test] Processing message: Tôi muốn mượn tài liệu, bước đầu là gì
+2025-05-06 13:27:39 - INFO - [Session: test] Processing message: mượn headphone
+2025-05-06 13:27:57 - INFO - [Session: test] Processing message: muốn in tài liệu
+2025-05-06 13:28:21 - INFO - [Session: test] Processing message: em muốn đặt phòng chức năng
+2025-05-06 13:29:24 - INFO - [Session: test] Processing message: hi có thắc mắc liên quan đến dịch vụ sử dụng máy tính thư viện

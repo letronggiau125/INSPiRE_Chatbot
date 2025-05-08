@@ -1,0 +1,28 @@
+2025-05-07 15:17:21 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-07 15:24:40 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-07 15:25:06 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-07 15:38:25 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-07 15:39:56 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-07 15:46:20 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-07 15:52:55 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-07 15:53:19 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-05-07 15:59:37 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-05-07 16:00:02 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-05-07 16:00:08 - INFO - [Session: test] Processing message: Thời gian mượn sách là bao lâu?
+2025-05-07 16:00:16 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-05-07 16:00:36 - INFO - [Session: test] Processing message: ai phụ trách cấp thẻ thư viên
+2025-05-07 16:00:53 - INFO - [Session: test] Processing message: hiệu trường trường tôn đức thắng là ai
+2025-05-07 16:01:05 - INFO - [Session: test] Processing message: tầm nhìn của trường là gì
+2025-05-07 16:01:25 - INFO - [Session: test] Processing message: tầm nhìn phát triễn của trường TDTU là gì
+2025-05-07 16:01:50 - INFO - [Session: test] Processing message: em muốn đặt phòng chức năng của thư viện
+2025-05-07 16:02:38 - INFO - [Session: test] Processing message: thư viện có cho mượn tai nghe không
+2025-05-07 16:03:03 - INFO - [Session: test] Processing message: phí trễ hạn trả sách là bao nhiêu
+2025-05-07 16:03:23 - INFO - [Session: test] Processing message: làm thế nào để sử dụng thư viện
+2025-05-07 16:03:36 - INFO - [Session: test] Processing message: hướng dẫn sử dụng thư viện
+2025-05-07 16:03:48 - INFO - [Session: test] Processing message: thư viện có đẹp không
+2025-05-07 16:03:57 - INFO - [Session: test] Processing message: giờ hoạt động
+2025-05-07 16:04:16 - INFO - [Session: test] Processing message: hôm nay thư viện phục vụ tới mấy giờ
+2025-05-07 16:04:28 - INFO - [Session: test] Processing message: ai là thủ tướng việt nam
+2025-05-07 16:05:08 - INFO - [Session: test] Processing message: Số lượng ngành đào tạo đại học tại TDTU?
+2025-05-07 16:05:35 - INFO - [Session: test] Processing message: trường tôn đức thắng có tốt không
+2025-05-07 16:18:01 - INFO - [Session: no_session] Embedding models initialized on cpu

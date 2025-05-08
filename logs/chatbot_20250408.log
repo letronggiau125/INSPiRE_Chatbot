@@ -1,0 +1,26 @@
+2025-04-08 10:26:09 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-08 10:27:07 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-08 10:27:39 - INFO - [Session: no_session] Embedding models initialized on cpu
+2025-04-08 10:28:40 - INFO - [Session: no_session] Starting server on 0.0.0.0:5001
+2025-04-08 10:28:45 - INFO - [Session: test] Processing message: Thư viện mở cửa lúc mấy giờ?
+2025-04-08 10:28:48 - INFO - [Session: test] Processing message: Làm thế nào để mượn sách?
+2025-04-08 10:29:05 - INFO - [Session: test] Processing message: Thư viện có hỗ trợ online không?
+2025-04-08 10:29:21 - INFO - [Session: test] Processing message: Thư viện có đẹp không?
+2025-04-08 10:29:42 - INFO - [Session: test] Processing message: What is the procedure of similarity checking for research publication?
+2025-04-08 10:30:20 - INFO - [Session: test] Processing message: If I need a hard copy that has been signed and stamped
+2025-04-08 10:30:46 - INFO - [Session: test] Processing message: thủ tục mượn sách về nhà
+2025-04-08 10:30:59 - INFO - [Session: test] Processing message: mượn sách
+2025-04-08 10:31:07 - INFO - [Session: test] Processing message: trả sách thế nào?
+2025-04-08 10:42:15 - INFO - [Session: test] Processing message: Nếu sách bị hư hỏng thì sao
+2025-04-08 10:42:29 - INFO - [Session: test] Processing message: thủ tục trả sách
+2025-04-08 10:43:00 - INFO - [Session: test] Processing message: trả sách như thế nào
+2025-04-08 10:43:43 - INFO - [Session: test] Processing message: trả sách trễ thì có bị gì không?
+2025-04-08 10:43:54 - INFO - [Session: test] Processing message: trả sách trễ
+2025-04-08 10:44:05 - INFO - [Session: test] Processing message: quá hạn trả sách thì bị làm sao
+2025-04-08 10:44:33 - INFO - [Session: test] Processing message: làm thế nào để trả sách
+2025-04-08 10:44:43 - INFO - [Session: test] Processing message: trả sách ở đâu
+2025-04-08 10:45:12 - INFO - [Session: test] Processing message: trả sách
+2025-04-08 10:45:14 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-08 10:45:23 - INFO - [Session: test] Processing message: trả sách
+2025-04-08 10:45:23 - ERROR - [Session: test] Error processing message: 'SemanticRouter' object has no attribute 'route' | Additional context: {'exc_info': True}
+2025-04-08 10:45:37 - INFO - [Session: test] Processing message: thủ tục trả sách
