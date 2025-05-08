@@ -283,10 +283,20 @@ def server_error(e):
     logger.error(f"Server error: {e}", exc_info=True)
     return jsonify({"error": Config.MESSAGES['server_error']}), 500
 
+# if __name__ == "__main__":
+#     logger.info(f"Starting server on {Config.FLASK_HOST}:{Config.FLASK_PORT}")
+#     app.run(
+#         host=Config.FLASK_HOST,
+#         port=Config.FLASK_PORT,
+#         debug=Config.DEBUG_MODE
+#     )
+
 if __name__ == "__main__":
-    logger.info(f"Starting server on {Config.FLASK_HOST}:{Config.FLASK_PORT}")
+    port = int(os.environ.get("PORT", 5000))  # Render sẽ truyền PORT qua biến môi trường
+    logger.info(f"Starting server on 0.0.0.0:{port}")
     app.run(
-        host=Config.FLASK_HOST,
-        port=Config.FLASK_PORT,
+        host="0.0.0.0",  # Đảm bảo public IP
+        port=port,
         debug=Config.DEBUG_MODE
     )
+
