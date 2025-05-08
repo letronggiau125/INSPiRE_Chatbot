@@ -1,9 +1,10 @@
 flask==3.0.2
 flask-cors==4.0.0
 python-dotenv==1.0.1
-chromadb==0.4.24
+chromadb==0.4.13         # ✅ Hạ xuống để tương thích với mmh3<4.0.0
 sentence-transformers==2.5.1
 semantic-router==0.0.14
 numpy==1.26.4
 pandas==2.2.1
-openpyxl==3.1.2 
+openpyxl==3.1.2
+mmh3==3.1.0              # ✅ Ghìm lại theo yêu cầu của pinecone-text (nếu bị kéo vào)
