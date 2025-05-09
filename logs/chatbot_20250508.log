@@ -140,3 +140,4 @@
 2025-05-08 16:23:45 - INFO - [Session: no_session] Processing message: chủ nhật thư viện mấy giờ đóng cửa for session: test
 2025-05-08 16:23:45 - INFO - [Session: test] Processing message: chủ nhật thư viện mấy giờ đóng cửa
 2025-05-08 16:23:46 - INFO - [Session: no_session] Generated response: {'response': 'Thư viện mở cửa từ thứ Hai đến Chủ nhật. Cụ thể như sau: từ thứ Hai đến thứ Sáu: Thư viện mờ cửa phục vụ từ 7h30 đến 20h00; sau 17h00 thư viện chỉ phục vụ ở tầng 1, 2 và tầng Hầm. Cuối tuần thời gian phục vụ từ 7h30 đến 17h00, Thứ 7, thư viện chỉ phục vụ ở tầng 1,2, và 4, còn Chủ Nhật chỉ phục vụ ở tầng 1 và 2.', 'category': 'quydinh', 'confidence': 0.86, 'timestamp': '2025-05-08T16:23:46.017142'}
+2025-05-08 18:01:33 - INFO - [Session: no_session] Embedding models initialized on cpu
