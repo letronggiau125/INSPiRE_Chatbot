@@ -1,45 +1,53 @@
 import chromadb
-from sentence_transformers import SentenceTransformer
+from chromadb.utils import embedding_functions
 import pandas as pd
+import os
+from dotenv import load_dotenv
 
-# 1️⃣ Khởi tạo ChromaDB
+# Load environment variables
+load_dotenv()
+
+# Initialize OpenAI embedding function
+ef = embedding_functions.OpenAIEmbeddingFunction(
+    api_key=os.getenv("OPENAI_API_KEY"),
+    model_name="text-embedding-ada-002"
+)
+
+# Initialize ChromaDB with OpenAI embeddings
 chroma_client = chromadb.PersistentClient(path="./chroma_faq_db")
 
-# 2️⃣ Tạo Collection để lưu dữ liệu FAQ
-collection = chroma_client.get_or_create_collection(name="faq_collection")
+# Create Collection with OpenAI embeddings
+collection = chroma_client.get_or_create_collection(
+    name="faq_collection",
+    embedding_function=ef
+)
 
-# 3️⃣ Load dữ liệu từ file Excel
+# Load data from Excel file
 df = pd.read_excel("faq_all_pages.xlsx")
 
-# 4️⃣ Dùng mô hình tạo vector cho câu hỏi
-model = SentenceTransformer("all-MiniLM-L6-v2")
-
-# 5️⃣ Thêm dữ liệu vào ChromaDB
+# Add data to ChromaDB
 for index, row in df.iterrows():
     question = row["question"]
     answer = row["answer"]
-    vector = model.encode(question).tolist()  # Chuyển câu hỏi thành vector
 
     collection.add(
-        ids=[str(index)],  # ID duy nhất cho mỗi câu hỏi
-        embeddings=[vector],  # Vector embedding của câu hỏi
+        ids=[str(index)],  # Unique ID for each question
+        documents=[question],  # The question text
         metadatas=[{"question": question, "answer": answer}]
     )
 
-
-print("✅ Dữ liệu đã được lưu vào ChromaDB!")
+print("✅ Data has been saved to ChromaDB!")
 
 def search_faq(query, top_k=3):
-    query_vector = model.encode(query).tolist()  # Chuyển câu hỏi thành vector
     results = collection.query(
-        query_embeddings=[query_vector],
-        n_results=top_k  # Số kết quả gần nhất cần tìm
+        query_texts=[query],
+        n_results=top_k  # Number of closest results to find
     )
 
-    print("\n📌 Kết quả tìm kiếm:")
+    print("\n📌 Search Results:")
     for i in range(len(results["ids"][0])):
-        print(f"🔹 Câu hỏi: {results['metadatas'][0][i]['question']}")
-        print(f"✅ Trả lời: {results['metadatas'][0][i]['answer']}\n")
+        print(f"🔹 Question: {results['metadatas'][0][i]['question']}")
+        print(f"✅ Answer: {results['metadatas'][0][i]['answer']}\n")
 
-# 🛠 Kiểm tra tìm kiếm với một câu hỏi
+# Test search with a question
 search_faq("Làm thế nào để mượn tài liệu?")

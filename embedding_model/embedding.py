@@ -1,44 +1,68 @@
-from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import List, Optional, Union, Dict, Tuple
 from functools import lru_cache
-import torch
 from utils.logger import setup_logger
 import re
 from langdetect import detect, DetectorFactory
 from langdetect.lang_detect_exception import LangDetectException
+import os
+import pickle
+from chromadb.utils import embedding_functions
 
 # Set seed for consistent language detection
 DetectorFactory.seed = 0
 logger = setup_logger()
 
+def l2_normalize(x: np.ndarray) -> np.ndarray:
+    return x / np.linalg.norm(x, axis=-1, keepdims=True)
+
 class EmbeddingModel:
     """Enhanced embedding model with sophisticated multilingual support and caching."""
     
-    def __init__(self):
-        """Initialize embedding models for better multilingual support."""
-        try:
-            # Primary model for Vietnamese
-            self.vi_model = SentenceTransformer("keepitreal/vietnamese-sbert")
-            # Multilingual model for better cross-lingual understanding
-            self.multi_model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-            # Device configuration
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            self.vi_model.to(self.device)
-            self.multi_model.to(self.device)
-            
-            # Language detection patterns
-            self.vietnamese_chars = set('àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ')
-            self.vietnamese_patterns = [
-                r'\b(của|và|hoặc|trong|với|các|những|này|khi|làm|được|không|cho|tại|về|từ|có|đã|sẽ)\b',
-                r'\b(thì|là|để|bị|bởi|rằng|nhưng|mà|hay|còn|đang|nên|theo|tới|vào|ra|lên|xuống)\b'
-            ]
-            
-            logger.info(f"Embedding models initialized on {self.device}")
-        except Exception as e:
-            logger.error(f"Error initializing embedding models: {e}")
-            raise
+    def __init__(
+        self,
+        cache_path: str = 'embedding_cache.pkl'
+    ):
+        logger.info("Initializing OpenAI embedding model")
+        
+        # Initialize OpenAI embedding function
+        self.ef = embedding_functions.OpenAIEmbeddingFunction(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            model_name="text-embedding-ada-002"
+        )
+        
+        self.cache_path = cache_path
+        self.cache = self._load_cache()
+        
+        # Language detection patterns
+        self.vietnamese_chars = set('àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ')
+        self.vietnamese_patterns = [
+            r'\b(của|và|hoặc|trong|với|các|những|này|khi|làm|được|không|cho|tại|về|từ|có|đã|sẽ)\b',
+            r'\b(thì|là|để|bị|bởi|rằng|nhưng|mà|hay|còn|đang|nên|theo|tới|vào|ra|lên|xuống)\b'
+        ]
     
+    def _load_cache(self) -> dict:
+        if os.path.exists(self.cache_path):
+            try:
+                with open(self.cache_path, 'rb') as f:
+                    return pickle.load(f)
+            except Exception as e:
+                logger.error(f"Error loading cache: {e}")
+                return {}
+        return {}
+
+    def _save_cache(self):
+        try:
+            with open(self.cache_path, 'wb') as f:
+                pickle.dump(self.cache, f)
+        except Exception as e:
+            logger.error(f"Error saving cache: {e}")
+
+    @lru_cache(maxsize=1000)
+    def _is_vietnamese(self, text: str) -> bool:
+        """Simple Vietnamese detection based on common characters."""
+        return any(char in self.vietnamese_chars for char in text)
+
     def detect_language(self, text: str) -> Tuple[str, float]:
         """Advanced language detection with confidence score."""
         try:
@@ -105,87 +129,64 @@ class EmbeddingModel:
             logger.error(f"Error in text preprocessing: {e}")
             return text
     
-    @lru_cache(maxsize=10000)
-    def get_embedding(self, text: str) -> List[List[float]]:
-        """Convert text to embedding vector with enhanced processing."""
+    def get_embedding(self, text: str) -> np.ndarray:
+        """Get embedding for a single text."""
+        if text in self.cache:
+            return self.cache[text]
+
         try:
-            # Input validation and preprocessing
-            if not isinstance(text, str):
-                raise ValueError("Input must be a string")
+            # Get embedding from OpenAI
+            embedding = self.ef([text])[0]
+            normalized = l2_normalize(np.array(embedding))
             
-            text = self.preprocess_text(text)
-            if not text:
-                return np.zeros((1, 768)).tolist()
+            # Cache the result
+            self.cache[text] = normalized
+            self._save_cache()
             
-            # Detect language and get confidence
-            lang, confidence = self.detect_language(text)
-            
-            # Get embeddings from both models
-            with torch.no_grad():
-                vi_embedding = self.vi_model.encode([text], convert_to_tensor=True)
-                multi_embedding = self.multi_model.encode([text], convert_to_tensor=True)
-                
-                # Dynamic weighting based on language confidence
-                if lang == "vi":
-                    vi_weight = 0.5 + (confidence * 0.3)  # Max 0.8
-                    multi_weight = 1 - vi_weight
-                else:
-                    multi_weight = 0.5 + (confidence * 0.3)  # Max 0.8
-                    vi_weight = 1 - multi_weight
-                
-                combined_embedding = (
-                    vi_weight * vi_embedding + multi_weight * multi_embedding
-                ).cpu().numpy()
-                
-                return combined_embedding.tolist()
-                
+            return normalized
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
-            return np.zeros((1, 768)).tolist()
-    
-    def get_batch_embeddings(self, texts: List[str], batch_size: int = 32) -> List[List[float]]:
-        """Generate embeddings for a batch of texts efficiently."""
-        try:
-            if not texts:
-                return []
-            
-            # Preprocess all texts
-            processed_texts = [self.preprocess_text(text) for text in texts]
-            
-            # Process in batches
-            all_embeddings = []
-            for i in range(0, len(processed_texts), batch_size):
-                batch = processed_texts[i:i + batch_size]
-                batch_embeddings = [self.get_embedding(text)[0] for text in batch]
-                all_embeddings.extend(batch_embeddings)
-            
-            return all_embeddings
-            
-        except Exception as e:
-            logger.error(f"Error in batch embedding generation: {e}")
-            return [np.zeros(768).tolist()] * len(texts)
-    
+            return np.zeros(1536)  # Return zero vector as fallback (OpenAI dimension)
+
+    def get_batch_embeddings(self, texts: List[str]) -> np.ndarray:
+        """Get embeddings for multiple texts efficiently."""
+        results = []
+        to_compute = []
+        
+        for text in texts:
+            if text in self.cache:
+                results.append(self.cache[text])
+            else:
+                to_compute.append(text)
+        
+        if to_compute:
+            try:
+                # Process in batches
+                batch_size = 32
+                for i in range(0, len(to_compute), batch_size):
+                    batch = to_compute[i:i + batch_size]
+                    batch_embs = self.ef(batch)
+                    normalized_embs = [l2_normalize(np.array(emb)) for emb in batch_embs]
+                    results.extend(normalized_embs)
+                    
+                    # Update cache
+                    for text, emb in zip(batch, normalized_embs):
+                        self.cache[text] = emb
+                    self._save_cache()
+                    
+            except Exception as e:
+                logger.error(f"Error in batch processing: {e}")
+                # Fill with zeros for failed computations
+                results.extend([np.zeros(1536)] * len(to_compute))
+        
+        return np.vstack(results)
+
     def compute_similarity(self, text1: str, text2: str) -> float:
         """Compute semantic similarity between two texts."""
         try:
-            # Preprocess texts
-            text1 = self.preprocess_text(text1)
-            text2 = self.preprocess_text(text2)
-            
             emb1 = self.get_embedding(text1)
             emb2 = self.get_embedding(text2)
-            
-            # Convert to numpy arrays
-            emb1_np = np.array(emb1)
-            emb2_np = np.array(emb2)
-            
-            # Compute cosine similarity
-            similarity = np.dot(emb1_np.flatten(), emb2_np.flatten()) / (
-                np.linalg.norm(emb1_np) * np.linalg.norm(emb2_np)
-            )
-            
-            return float(similarity)
-            
+            return float(np.dot(emb1, emb2))
         except Exception as e:
             logger.error(f"Error computing similarity: {e}")
             return 0.0

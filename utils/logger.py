@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import Optional
 from logging.handlers import RotatingFileHandler
 from config import Config
+import sys
+from pathlib import Path
 
 class ChatbotLogger:
     """Enhanced logger for the chatbot application."""
@@ -86,6 +88,46 @@ class ChatbotLogger:
 # Create a global logger instance
 chatbot_logger = ChatbotLogger()
 
-def setup_logger():
-    """Return the global logger instance."""
-    return chatbot_logger 
+def setup_logger(
+    name: str = "tdtu_faq",
+    level: int = logging.INFO,
+    log_file: Optional[str] = None
+) -> logging.Logger:
+    """Set up and configure a logger instance.
+    
+    Args:
+        name: Name of the logger
+        level: Logging level (default: INFO)
+        log_file: Optional path to log file
+        
+    Returns:
+        Configured logger instance
+    """
+    # Create logger
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    
+    # Create formatters
+    file_formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    console_formatter = logging.Formatter(
+        '%(levelname)s: %(message)s'
+    )
+    
+    # Create console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(console_formatter)
+    logger.addHandler(console_handler)
+    
+    # Create file handler if log file specified
+    if log_file:
+        # Ensure log directory exists
+        log_path = Path(log_file)
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        file_handler = logging.FileHandler(log_file)
+        file_handler.setFormatter(file_formatter)
+        logger.addHandler(file_handler)
+    
+    return logger 

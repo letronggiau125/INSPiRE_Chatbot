@@ -131,66 +131,69 @@
 
 import numpy as np
 from typing import List
-from sentence_transformers import SentenceTransformer
+import os
+from chromadb.utils import embedding_functions
 from sklearn.preprocessing import normalize
 
 class SemanticRouter:
-    def __init__(self, routes: List, threshold: float = 0.3):  # Hạ ngưỡng xuống 0.3
+    def __init__(self, routes: List, threshold: float = 0.3):
         self.routes = routes
         self.threshold = threshold
-        self.embedding_model = SentenceTransformer("keepitreal/vietnamese-sbert")
+        self.ef = embedding_functions.OpenAIEmbeddingFunction(
+            api_key=os.getenv("OPENAI_API_KEY"),
+            model_name="text-embedding-ada-002"
+        )
         self.routesEmbedding = {}
         self.routesEmbeddingCal = {}
 
-        # Tạo vector embedding cho từng route
+        # Generate embeddings for each route
         for route in self.routes:
             print(f"🔹 Generating embeddings for route: {route.name}")
-            embeddings = self.embedding_model.encode(route.samples)
+            embeddings = self.ef(route.samples)
 
-            # 🔍 Kiểm tra embeddings có dữ liệu không
+            # Check if embeddings are empty
             if embeddings is None or len(embeddings) == 0:
-                print(f"⚠️ Lỗi: Embedding rỗng cho route {route.name}. Sử dụng vector 0s.")
-                embeddings = np.zeros((1, 768))  # Thay thế bằng vector zero
+                print(f"⚠️ Error: Empty embedding for route {route.name}. Using zeros vector.")
+                embeddings = np.zeros((1, 1536))  # OpenAI embedding dimension
 
-            # Đảm bảo embeddings luôn là mảng 2D trước khi normalize
+            # Ensure embeddings are 2D array before normalizing
             embeddings = np.array(embeddings)
             if embeddings.ndim == 1:
                 embeddings = embeddings.reshape(1, -1)
 
             self.routesEmbedding[route.name] = embeddings
-            self.routesEmbeddingCal[route.name] = normalize(embeddings, axis=1)  # Dùng normalize() chính xác hơn
+            self.routesEmbeddingCal[route.name] = normalize(embeddings, axis=1)
 
+    def guide(self, query: str):
+        print(f"🔍 Processing query: {query}")
+        queryEmbedding = self.ef([query])
 
-def guide(self, query: str):
-    print(f"🔍 Processing query: {query}")
-    queryEmbedding = self.embedding_model.encode([query])
+        # Check if query embedding is empty
+        if queryEmbedding is None or len(queryEmbedding) == 0:
+            print("⚠️ Error: Empty query embedding! Using zeros vector.")
+            queryEmbedding = np.zeros((1, 1536))  # OpenAI embedding dimension
+        
+        # Ensure query embedding is 2D before normalizing
+        queryEmbedding = np.array(queryEmbedding)
+        if queryEmbedding.ndim == 1:
+            queryEmbedding = queryEmbedding.reshape(1, -1)
 
-    # 🔍 Kiểm tra queryEmbedding có dữ liệu không
-    if queryEmbedding is None or len(queryEmbedding) == 0:
-        print("⚠️ Lỗi: Query embedding rỗng! Sử dụng vector 0s.")
-        queryEmbedding = np.zeros((1, 768))  # Thay thế bằng vector zero
-    
-    # Đảm bảo queryEmbedding có dạng 2D trước khi normalize
-    queryEmbedding = np.array(queryEmbedding)
-    if queryEmbedding.ndim == 1:
-        queryEmbedding = queryEmbedding.reshape(1, -1)
+        queryEmbedding = normalize(queryEmbedding)
 
-    queryEmbedding = normalize(queryEmbedding)  # Dùng sklearn normalize
+        scores = []
+        for route in self.routes:
+            routeEmbeddingCal = self.routesEmbeddingCal[route.name]
+            score = np.mean(np.dot(routeEmbeddingCal, queryEmbedding.T).flatten())
+            print(f"📌 Score for {route.name}: {score}")
+            scores.append((score, route.name))
 
-    scores = []
-    for route in self.routes:
-        routeEmbeddingCal = self.routesEmbeddingCal[route.name]
-        score = np.mean(np.dot(routeEmbeddingCal, queryEmbedding.T).flatten())
-        print(f"📌 Score for {route.name}: {score}")
-        scores.append((score, route.name))
+        scores.sort(reverse=True)
+        best_match = scores[0]
 
-    scores.sort(reverse=True)
-    best_match = scores[0]
+        # Check threshold
+        if best_match[0] < self.threshold:
+            print(f"⚠️ Best score {best_match[0]} is below threshold ({self.threshold}). Returning 'unknown'.")
+            return (query, "unknown")
 
-    # Kiểm tra ngưỡng
-    if best_match[0] < self.threshold:
-        print(f"⚠️ Best score {best_match[0]} is below threshold ({self.threshold}). Returning 'unknown'.")
-        return (query, "unknown")
-
-    print(f"✅ Best match: {best_match[1]} (Score: {best_match[0]})")
-    return best_match
+        print(f"✅ Best match: {best_match[1]} (Score: {best_match[0]})")
+        return best_match

@@ -7,22 +7,31 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 from reflection import Reflection
-from semantic_router.routers.semantic import SemanticRouter
-from semantic_router.routers.route import Route
-from embedding_model.embedding import embedding_model
+from semantic_router.semantic import SemanticSearch
+from embedding_model.embedding import EmbeddingModel
 from config import Config
 from utils.logger import setup_logger
 from utils.rate_limiter import rate_limit
 from utils.validators import MessageValidator
 from utils.response import ChatResponse
 import numpy as np
-import torch
+from chromadb.utils import embedding_functions
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import linear_kernel
+from sklearn.metrics.pairwise import cosine_distances
+from rag.rag_integration import RAG
+from rag.ingest_faq import ingest_all_faqs
+
+# Initialize embedding model
+embedding_model = EmbeddingModel()
 
 # Lazy loading model to reduce memory footprint
 @lru_cache(maxsize=1)
-def get_sentence_model():
-    from sentence_transformers import SentenceTransformer
-    return SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
+def get_embedding_function():
+    return embedding_functions.OpenAIEmbeddingFunction(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model_name="text-embedding-ada-002"
+    )
 
 # Load environment variables
 load_dotenv()
@@ -46,7 +55,7 @@ logger = setup_logger()
 
 class FAQMatcher:
     def __init__(self):
-        self.sentence_model = get_sentence_model()
+        self.ef = get_embedding_function()
         self.tech_terms = {
             'máy tính': ['computer', 'laptop', 'pc'],
             'máy in': ['printer'],
@@ -58,82 +67,137 @@ class FAQMatcher:
             'tài khoản': ['account'],
             'mật khẩu': ['password']
         }
+        self.abbrev_map = {
+            'tdt': 'trường đại học tôn đức thắng',
+            'tv': 'thư viện',
+            'sv': 'sinh viên',
+            'gv': 'giảng viên',
+            'cn': 'chủ nhật',
+            't2': 'thứ hai',
+            't3': 'thứ ba',
+            't4': 'thứ tư',
+            't5': 'thứ năm',
+            't6': 'thứ sáu',
+            't7': 'thứ bảy',
+            'p/s': 'phòng sinh viên',
+            'p/gv': 'phòng giảng viên',
+            'p/tv': 'phòng thư viện',
+            'p/hc': 'phòng hành chính',
+            'p/kt': 'phòng kỹ thuật',
+            'p/tt': 'phòng thông tin',
+            'p/ql': 'phòng quản lý',
+            'p/nv': 'phòng nhân viên',
+            'p/bs': 'phòng bảo vệ',
+            'p/vs': 'phòng vệ sinh',
+            'p/đx': 'phòng đọc xuất',
+            'p/mt': 'phòng mượn trả',
+            'p/tk': 'phòng tra cứu'
+        }
         self.keyword_map = {
             'printer': 'dichvu', 'scanner': 'huongdan', 'wifi': 'dichvu',
             'download': 'huongdan', 'upload': 'huongdan', 'login': 'huongdan'
         }
         self.question_patterns = self.generate_question_patterns()
         self.faq_data = self.load_faq_data()
-        self.variation_lookup = self.build_variation_lookup()
+        self.faq_map = self.build_faq_map()
+        self.corpus_embeddings = self.encode_corpus()
+
+    def generate_question_patterns(self) -> Dict[str, List[str]]:
+        """Generate regex patterns for different question categories."""
+        return {
+            'huongdan': [
+                r'(làm thế nào|làm sao|how do i|how can i).*',
+                r'cách .*',
+                r'where .*',
+                r'ở đâu .*'
+            ],
+            'quydinh': [
+                r'quy định .*',
+                r'(có được|được phép|rules).*'
+            ],
+            'dichvu': [
+                r'dịch vụ .*',
+                r'(phí|giá|services).*'
+            ],
+            'muon_tra': [
+                r'(mượn|trả|gia hạn|borrow|return|renew).*'
+            ],
+            'lienhe': [
+                r'(liên hệ|contact|gặp ai).*'
+            ],
+            'chitchat': [
+                r'(xin chào|hi|hello|tạm biệt|bye).*'
+            ]
+        }
 
     def load_faq_data(self) -> List[Dict[str, Any]]:
+        """Load FAQ data from JSON file."""
         try:
             with open("faq_data.json", "r", encoding="utf-8") as f:
                 data = json.load(f)
                 for entry in data:
-                    entry['embedding'] = torch.tensor(entry['embedding']) if 'embedding' in entry else self.sentence_model.encode(entry['question'], convert_to_tensor=True)
-                    entry['variations'] = self.generate_question_variations(entry['question'])
+                    if 'embedding' not in entry:
+                        entry['embedding'] = self.ef([entry['question']])[0]
                 return data
         except Exception as e:
             logger.error(f"Error loading FAQ data: {e}")
             return []
 
-    def build_variation_lookup(self) -> Dict[str, Dict[str, Any]]:
-        lookup = {}
+    def build_faq_map(self) -> Dict[str, Dict[str, Any]]:
+        """Build hash map for direct question/alias lookups."""
+        faq_map = {}
         for entry in self.faq_data:
-            for variation in entry['variations']:
-                lookup[variation.lower()] = entry
-        return lookup
+            question = entry['question'].strip().lower()
+            faq_map[question] = entry
+            for alias in entry.get('aliases', []):
+                alias_norm = alias.strip().lower()
+                faq_map[alias_norm] = entry
+        return faq_map
 
-    def generate_question_patterns(self) -> Dict[str, List[str]]:
-        return {
-            'huongdan': [r'(làm thế nào|làm sao|how do i|how can i).*', r'cách .*', r'where .*', r'ở đâu .*'],
-            'quydinh': [r'quy định .*', r'(có được|được phép|rules).*'],
-            'dichvu': [r'dịch vụ .*', r'(phí|giá|services).*'],
-            'muon_tra': [r'(mượn|trả|gia hạn|borrow|return|renew).*'],
-            'lienhe': [r'(liên hệ|contact|gặp ai).*'],
-            'chitchat': [r'(xin chào|hi|hello|tạm biệt|bye).*']
-        }
+    def encode_corpus(self) -> np.ndarray:
+        """Encode all FAQ questions for semantic search."""
+        return np.array(self.ef([e['question'] for e in self.faq_data]))
 
-    def generate_question_variations(self, question: str) -> List[str]:
-        base = question.lower().rstrip('?')
-        variations = [base]
-        for vn_term, eng_terms in self.tech_terms.items():
-            if vn_term in base:
-                variations.extend(base.replace(vn_term, eng) for eng in eng_terms)
-            for eng in eng_terms:
-                if eng in base:
-                    variations.append(base.replace(eng, vn_term))
-        return list(set(variations))
-
-    @lru_cache(maxsize=1000)
-    def match_question_pattern(self, question: str) -> Optional[str]:
-        question = question.lower()
-        for category, patterns in self.question_patterns.items():
-            for pattern in patterns:
-                if re.search(pattern, question, re.IGNORECASE):
-                    return category
-        return None
+    def normalize_abbreviations(self, text: str) -> str:
+        """Normalize text by expanding abbreviations."""
+        q = text.lower().strip()
+        for abbr, full in self.abbrev_map.items():
+            pattern = r'\b' + re.escape(abbr) + r'\b'
+            q = re.sub(pattern, full, q)
+        return q
 
     def find_best_match(self, user_question: str, threshold: float = 0.6) -> Optional[Dict[str, Any]]:
-        user_question_clean = user_question.lower().rstrip('?')
+        """Find best matching FAQ entry using direct lookup and semantic search."""
+        # Normalize the query
+        norm_query = self.normalize_abbreviations(user_question).strip().lower()
+        
+        # 1. Direct lookup in FAQ map
+        if norm_query in self.faq_map:
+            return {**self.faq_map[norm_query], 'confidence': 1.0}
+        
+        # 2. Check keyword matches
         for keyword, cat in self.keyword_map.items():
-            if keyword in user_question_clean:
+            if keyword in norm_query:
                 return {'question': user_question, 'category': cat, 'confidence': 1.0}
-        if user_question_clean in self.variation_lookup:
-            matched_entry = self.variation_lookup[user_question_clean]
-            return {**matched_entry, 'confidence': 1.0}
+        
+        # 3. Semantic search fallback
         try:
-            question_embedding = self.sentence_model.encode(user_question, convert_to_tensor=True)
-            similar = [(float(torch.nn.functional.cosine_similarity(entry['embedding'], question_embedding, dim=0)), entry) for entry in self.faq_data]
-            similar = [pair for pair in similar if pair[0] > threshold]
-            if similar:
-                similar.sort(key=lambda x: x[0], reverse=True)
-                best_score, best_entry = similar[0]
-                return {**best_entry, 'confidence': best_score}
+            query_embedding = np.array(self.ef([user_question]))
+            similarities = cosine_similarity(query_embedding, self.corpus_embeddings)[0]
+            best_idx = np.argmax(similarities)
+            best_score = similarities[best_idx]
+            
+            if best_score >= threshold:
+                return {**self.faq_data[best_idx], 'confidence': float(best_score)}
         except Exception as e:
             logger.error(f"Error in semantic matching: {e}")
-        return None
+        
+        # 4. No match found - return fallback response
+        return {
+            'question': user_question,
+            'category': 'unknown',
+            'confidence': 0.0
+        }
 
     def get_best_response(self, user_message: str) -> Tuple[Optional[str], Optional[str], float]:
         match = self.find_best_match(user_message)
