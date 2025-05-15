@@ -1,12 +1,11 @@
-import os
 import numpy as np
-from typing import List, Dict, Any, Optional
-from chromadb.utils import embedding_functions
+from typing import List, Dict, Any
 from utils.logger import setup_logger
+from embedding_model.embedding import embedding_model
 
 logger = setup_logger()
 
-# Try to import FAISS, but don't fail if it's not available
+# Try to import FAISS, but continue with numpy fallback if unavailable
 try:
     import faiss
     FAISS_AVAILABLE = True
@@ -15,16 +14,13 @@ except ImportError:
     FAISS_AVAILABLE = False
 
 class SemanticSearch:
+    """Semantic search using FAISS or numpy with embeddings from EmbeddingModel."""
     def __init__(self, use_faiss: bool = True):
-        self.ef = embedding_functions.OpenAIEmbeddingFunction(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            model_name="text-embedding-ada-002"
-        )
         self.use_faiss = use_faiss and FAISS_AVAILABLE
         self.index = None
-        self.corpus = []
-        self.dimension = 1536  # text-embedding-ada-002 dimension
-        
+        self.corpus: List[str] = []
+        self.dimension = 1536  # embedding dimension
+
         if self.use_faiss:
             self.index = faiss.IndexFlatL2(self.dimension)
             logger.info("FAISS index initialized successfully")
@@ -32,101 +28,67 @@ class SemanticSearch:
             logger.info("Using numpy-based similarity search")
 
     def build_index(self, corpus: List[str]) -> None:
-        """Build search index from corpus."""
+        """Build the search index from a list of documents."""
         self.corpus = corpus
-        embeddings = self.ef(corpus)
+        embeddings = embedding_model.get_batch_embeddings(corpus)
         
         if self.use_faiss:
-            # Convert to numpy array and normalize for L2 distance
-            embeddings_np = np.array(embeddings).astype('float32')
-            faiss.normalize_L2(embeddings_np)
-            self.index.add(embeddings_np)
+            emb_np = embeddings.astype('float32')
+            faiss.normalize_L2(emb_np)
+            self.index.add(emb_np)
             logger.info(f"FAISS index built with {len(corpus)} documents")
         else:
-            # Store embeddings for numpy-based search
-            self.embeddings = np.array(embeddings)
+            self.embeddings = embeddings
             logger.info(f"Stored {len(corpus)} embeddings for numpy-based search")
 
     def query(self, query: str, top_k: int = 5, threshold: float = 0.6) -> List[Dict[str, Any]]:
-        """Search for similar documents in the corpus."""
+        """Return top_k similar documents above a similarity threshold."""
+        results: List[Dict[str, Any]] = []
         try:
-            query_embedding = self.ef([query])[0]
-            
+            query_emb = embedding_model.get_batch_embeddings([query])[0]
+
             if self.use_faiss:
-                # Convert query to numpy and normalize
-                query_np = np.array([query_embedding]).astype('float32')
-                faiss.normalize_L2(query_np)
-                
-                # Search using FAISS
-                distances, indices = self.index.search(query_np, top_k)
-                
-                # Convert distances to similarities (1 - normalized distance)
+                q_np = np.array([query_emb]).astype('float32')
+                faiss.normalize_L2(q_np)
+                distances, indices = self.index.search(q_np, top_k)
                 similarities = 1 - distances[0] / 2
-                
-                results = []
                 for idx, score in zip(indices[0], similarities):
                     if score >= threshold:
-                        results.append({
-                            'text': self.corpus[idx],
-                            'score': float(score),
-                            'index': int(idx)
-                        })
-                return results
+                        results.append({'text': self.corpus[idx], 'score': float(score), 'index': int(idx)})
             else:
-                # Numpy-based search using cosine similarity
-                similarities = np.dot(self.embeddings, query_embedding) / (
-                    np.linalg.norm(self.embeddings, axis=1) * np.linalg.norm(query_embedding)
+                sims = np.dot(self.embeddings, query_emb) / (
+                    np.linalg.norm(self.embeddings, axis=1) * np.linalg.norm(query_emb)
                 )
-                top_indices = np.argsort(similarities)[-top_k:][::-1]
-                
-                results = []
-                for idx in top_indices:
-                    score = float(similarities[idx])
+                top_idxs = np.argsort(sims)[-top_k:][::-1]
+                for idx in top_idxs:
+                    score = float(sims[idx])
                     if score >= threshold:
-                        results.append({
-                            'text': self.corpus[idx],
-                            'score': score,
-                            'index': int(idx)
-                        })
-                return results
-                
+                        results.append({'text': self.corpus[idx], 'score': score, 'index': int(idx)})
         except Exception as e:
             logger.error(f"Error in semantic search: {e}")
-            return []
+        return results
 
     def add_to_index(self, new_texts: List[str]) -> None:
-        """Add new documents to the index."""
+        """Add new documents to the existing index."""
         if not new_texts:
             return
-            
-        new_embeddings = self.ef(new_texts)
-        
+        new_embeddings = embedding_model.get_batch_embeddings(new_texts)
+
         if self.use_faiss:
-            # Convert to numpy and normalize
-            new_embeddings_np = np.array(new_embeddings).astype('float32')
-            faiss.normalize_L2(new_embeddings_np)
-            self.index.add(new_embeddings_np)
+            emb_np = new_embeddings.astype('float32')
+            faiss.normalize_L2(emb_np)
+            self.index.add(emb_np)
         else:
-            # Append to existing embeddings
             self.embeddings = np.vstack([self.embeddings, new_embeddings])
-            
+        
         self.corpus.extend(new_texts)
         logger.info(f"Added {len(new_texts)} new documents to index")
 
-    def remove_from_index(self, text: str):
-        """Remove a text from the index (requires rebuilding)."""
-        try:
-            if text in self.corpus:
-                idx = self.corpus.index(text)
-                self.corpus.pop(idx)
-                
-                # Rebuild index
-                if len(self.corpus) > 0:
-                    self.build_index(self.corpus)
-                else:
-                    self.index = None
-                    self.embeddings = None
-                    
-        except Exception as e:
-            logger.error(f"Error removing from index: {e}")
-            raise 
+    def remove_from_index(self, text: str) -> None:
+        """Remove a document from the index and rebuild if necessary."""
+        if text in self.corpus:
+            self.corpus.remove(text)
+            if self.corpus:
+                self.build_index(self.corpus)
+            else:
+                self.index = None
