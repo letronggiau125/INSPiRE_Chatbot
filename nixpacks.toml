@@ -1,0 +1,22 @@
+[phases.setup]
+commands = [
+  "echo \"=== Nixpacks: SETUP phase ===\""
+]
+
+[phases.build]
+commands = [
+  "echo \"=== Nixpacks: BUILD phase ===\"",
+  "pip install --no-cache-dir -r requirements.txt"
+]
+
+[phases.start]
+commands = [
+  "echo \"=== Nixpacks: START phase ===\"",
+  "gunicorn serve:app --bind 0.0.0.0:$PORT"
+]
+
+# Thêm phần cache xuống đây:
+[cache]
+paths = [
+  "/root/.cache/pip"
+]
