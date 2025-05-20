@@ -6,6 +6,9 @@ from datetime import datetime
 from utils.logger import setup_logger
 from semantic_router.semantic import SemanticSearch
 from embedding_model.embedding import EmbeddingModel
+import random
+import re
+from collections import Counter
 
 logger = setup_logger()
 
@@ -27,16 +30,151 @@ class Reflection:
             metadata={"hnsw:space": "cosine"}
         )
         
-        # Initialize conversation tracking
+        # Enhanced conversation tracking
         self.current_session = None
         self.conversation_history: List[Dict[str, Any]] = []
+        self.context_window = 5  # Number of recent messages to consider for context
         
-        logger.info("Reflection component initialized")
+        # Response templates for common scenarios
+        self.response_templates = {
+            'greeting': [
+                "Xin chào! Tôi có thể giúp gì cho bạn?",
+                "Chào bạn! Bạn cần hỗ trợ gì ạ?",
+                "Rất vui được gặp bạn! Tôi có thể giúp gì không?"
+            ],
+            'thanks': [
+                "Không có gì ạ! Rất vui được giúp bạn.",
+                "Rất vui vì đã giúp được bạn!",
+                "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!"
+            ],
+            'goodbye': [
+                "Tạm biệt bạn! Hẹn gặp lại!",
+                "Chúc bạn một ngày tốt lành!",
+                "Cảm ơn bạn đã trò chuyện. Hẹn gặp lại!"
+            ],
+            'unknown': [
+                "Xin lỗi, tôi chưa hiểu rõ câu hỏi của bạn. Bạn có thể diễn đạt lại được không?",
+                "Tôi chưa chắc chắn về điều bạn đang hỏi. Bạn có thể giải thích rõ hơn được không?",
+                "Xin lỗi, tôi không chắc mình hiểu đúng. Bạn có thể cho thêm thông tin không?"
+            ]
+        }
+        
+        logger.info("Reflection component initialized with enhanced features")
 
-    def start_session(self, session_id: Optional[str] = None):
-        """Start a new conversation session."""
+    def _select_response_template(self, category: str) -> str:
+        """Select an appropriate response template based on message category."""
+        templates = self.response_templates.get(category, self.response_templates['unknown'])
+        return random.choice(templates)
+
+    def _extract_intent(self, message: str) -> str:
+        """Extract the intent/category from a message."""
+        # Basic intent patterns
+        patterns = {
+            'greeting': r'\b(xin chào|hello|hi|hey|chào|alo)\b',
+            'thanks': r'\b(cảm ơn|thank|thanks|cám ơn)\b',
+            'goodbye': r'\b(tạm biệt|bye|goodbye)\b',
+            'question': r'\b(ai|ở đâu|khi nào|như thế nào|là gì|bao nhiêu|sao|thế nào)\b|\?',
+            'statement': r'.'  # Default case
+        }
+        
+        for intent, pattern in patterns.items():
+            if re.search(pattern, message.lower()):
+                return intent
+        return 'statement'
+
+    def _get_relevant_history(self, message: str) -> List[Dict[str, Any]]:
+        """Get relevant conversation history for the current message."""
+        # Get recent history
+        recent = self.conversation_history[-self.context_window:] if self.conversation_history else []
+        
+        # Get semantically similar historical messages
+        try:
+            query_results = self.collection.query(
+                query_texts=[message],
+                n_results=3,
+                where={"session_id": self.current_session} if self.current_session else None
+            )
+            
+            # Convert query results to history format
+            semantic_history = []
+            for doc, metadata in zip(query_results['documents'][0], query_results['metadatas'][0]):
+                entry = json.loads(doc)
+                entry['metadata'] = metadata
+                semantic_history.append(entry)
+            
+            # Combine recent and semantic history
+            combined = recent + [h for h in semantic_history if h not in recent]
+            return combined[:self.context_window]
+            
+        except Exception as e:
+            logger.error(f"Error getting relevant history: {e}")
+            return recent
+
+    def chat(self, session_id: Optional[str], message: str) -> str:
+        """Process a chat message and return a response."""
+        try:
+            # Start or continue session
+            if not self.current_session:
+                self.start_session(session_id)
+            
+            # Extract intent and get relevant history
+            intent = self._extract_intent(message)
+            relevant_history = self._get_relevant_history(message)
+            
+            # Generate response based on intent
+            if intent in ['greeting', 'thanks', 'goodbye']:
+                response = self._select_response_template(intent)
+            else:
+                # Get semantic search results
+                search_results = self.semantic_search.query(
+                    message,
+                    top_k=3,
+                    threshold=0.7
+                )
+                
+                if search_results:
+                    # Use the best matching response
+                    response = search_results[0]['text']
+                else:
+                    # Fallback to template response
+                    response = self._select_response_template('unknown')
+            
+            # Add to history
+            self.add_to_history(
+                message=message,
+                response=response,
+                metadata={
+                    'intent': intent,
+                    'confidence': 1.0 if intent in ['greeting', 'thanks', 'goodbye'] else 0.7
+                }
+            )
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f"Error in chat: {e}")
+            return "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau."
+
+    def start_session(self, session_id: Optional[str] = None) -> None:
+        """Start a new conversation session with enhanced tracking."""
         self.current_session = session_id or datetime.now().strftime("%Y%m%d_%H%M%S")
         self.conversation_history = []
+        
+        # Load existing session history if available
+        if session_id:
+            try:
+                results = self.collection.query(
+                    query_texts=[""],
+                    where={"session_id": session_id},
+                    n_results=100
+                )
+                
+                for doc in results['documents'][0]:
+                    self.conversation_history.append(json.loads(doc))
+                    
+            except Exception as e:
+                logger.error(f"Error loading session history: {e}")
+        
         logger.info(f"Started new session: {self.current_session}")
 
     def add_to_history(
@@ -44,24 +182,54 @@ class Reflection:
         message: str,
         response: str,
         metadata: Optional[Dict[str, Any]] = None
-    ):
-        """Add a message-response pair to conversation history."""
+    ) -> None:
+        """Add a message-response pair to conversation history with enhanced metadata."""
+        meta = metadata or {}
         entry = {
             "timestamp": datetime.now().isoformat(),
             "message": message,
             "response": response,
-            "metadata": metadata or {}
+            "metadata": {
+                "session_id": self.current_session,
+                "intent": meta.get('intent', 'unknown'),
+                "confidence": meta.get('confidence', 0.0),
+                **(meta or {})
+            }
         }
+        
         self.conversation_history.append(entry)
         
-        # Store in ChromaDB
-        self.collection.add(
-            documents=[json.dumps(entry)],
-            metadatas=[{"session_id": self.current_session, **(metadata or {})}],
-            ids=[f"{self.current_session}_{len(self.conversation_history)}"]
-        )
-        
+        # Store in ChromaDB with embedding
+        try:
+            # Combine message and response for better context embedding
+            combined_text = f"{message} [SEP] {response}"
+            
+            self.collection.add(
+                documents=[json.dumps(entry)],
+                metadatas=[entry['metadata']],
+                ids=[f"{self.current_session}_{len(self.conversation_history)}"]
+            )
+            
+        except Exception as e:
+            logger.error(f"Error adding to history: {e}")
+            
         logger.debug(f"Added entry to history: {entry}")
+
+    def get_session_summary(self) -> Dict[str, Any]:
+        """Get a summary of the current session."""
+        if not self.conversation_history:
+            return {"status": "No conversation history"}
+            
+        return {
+            "session_id": self.current_session,
+            "message_count": len(self.conversation_history),
+            "start_time": self.conversation_history[0]["timestamp"],
+            "last_time": self.conversation_history[-1]["timestamp"],
+            "intents": Counter(
+                entry["metadata"].get("intent", "unknown")
+                for entry in self.conversation_history
+            )
+        }
 
     def analyze_context(self, message: str) -> Dict[str, Any]:
         """Analyze the context of the current message."""
@@ -220,23 +388,4 @@ class Reflection:
                 
         except Exception as e:
             logger.error(f"Error exporting conversation: {e}")
-            return ""
-
-    def chat(self, session_id: str, message: str) -> str:
-        """Process a chat message and return a response."""
-        try:
-            # Start or continue session
-            if not self.current_session:
-                self.start_session(session_id)
-            
-            # Get semantic search results
-            search_results = self.semantic_search.query(message)
-            
-            # Generate response
-            response = self.generate_response(message, search_results)
-            
-            return response["response"]
-            
-        except Exception as e:
-            logger.error(f"Error in chat: {e}")
-            return "I apologize, but I encountered an error processing your message." 
+            return "" 

@@ -5,11 +5,15 @@ import numpy as np
 import chromadb
 from chromadb.utils import embedding_functions
 from dotenv import load_dotenv
+from openai import OpenAI
 
 from rag.ingest_faq import DB_PATH, COLLECTION_NAME
 
 # Load environment variables
 load_dotenv()
+
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Initialize OpenAI embedding function
 ef = embedding_functions.OpenAIEmbeddingFunction(
@@ -18,12 +22,13 @@ ef = embedding_functions.OpenAIEmbeddingFunction(
 )
 
 # Create client + collection
-client = chromadb.PersistentClient(path=DB_PATH)
-collection = client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
+chroma_client = chromadb.PersistentClient(path=DB_PATH)
+collection = chroma_client.get_or_create_collection(name=COLLECTION_NAME, embedding_function=ef)
 
 class RAG:
     def __init__(self, collection):
         self.collection = collection
+        self.client = client
 
     def hybrid_search(self, query: str, limit=5):
         # 1) Perform vector search

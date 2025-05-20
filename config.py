@@ -24,7 +24,9 @@ class Config:
     # Chat settings
     CHAT_SETTINGS: Dict[str, Any] = {
         'max_message_length': 500,
-        'min_confidence_score': 0.5,
+        'min_confidence_score': 0.6,
+        'semantic_confidence_score': 0.9,
+        'fuzzy_confidence_score': 0.75,  # Threshold for fuzzy matching (0.7-0.85)
         'default_session_timeout': 3600  # 1 hour in seconds
     }
     
@@ -67,4 +69,4 @@ class Config:
     @classmethod
     def format_error_message(cls, message_key: str, **kwargs) -> str:
         """Format an error message with provided parameters."""
-        return cls.MESSAGES[message_key].format(**kwargs) 
+        return cls.MESSAGES[message_key].format(**kwargs)

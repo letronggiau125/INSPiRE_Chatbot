@@ -139,13 +139,23 @@ class ChatApp {
             const data = await response.json();
             loadingDiv.remove();
 
+            // if (data.error) {
+            //     this.showError(data.error);
+            // } else if (data.response) {
+            //     this.chatBox.appendChild(this.createMessageElement(data.response));
+            // } else {
+            //     this.showError("Không nhận được phản hồi từ máy chủ");
+            // }
             if (data.error) {
                 this.showError(data.error);
             } else if (data.response) {
                 this.chatBox.appendChild(this.createMessageElement(data.response));
+            } else if (data.category && data.confidence >= 0.5) {
+                this.showError("Xin lỗi, tôi chưa có câu trả lời cho câu hỏi này.");
             } else {
-                this.showError("Không nhận được phản hồi từ máy chủ");
-            }
+                this.showError("Xin lỗi, tôi chưa hiểu câu hỏi. Vui lòng thử lại.");
+              }
+              
         } catch (error) {
             console.error("Chat error:", error);
             loadingDiv.remove();
