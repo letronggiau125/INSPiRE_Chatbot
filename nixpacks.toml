@@ -12,10 +12,9 @@ commands = [
 [phases.start]
 commands = [
   "echo \"=== Nixpacks: START phase ===\"",
-  "gunicorn serve.py --bind 0.0.0.0:$PORT"
+  "gunicorn serve:app --bind 0.0.0.0:$PORT"
 ]
 
-# Thêm phần cache xuống đây:
 [cache]
 paths = [
   "/root/.cache/pip"
