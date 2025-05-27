@@ -25,9 +25,11 @@ class Config:
     CHAT_SETTINGS: Dict[str, Any] = {
         'max_message_length': 500,
         'min_confidence_score': 0.6,
-        'semantic_confidence_score': 0.9,
-        'fuzzy_confidence_score': 0.75,  # Threshold for fuzzy matching (0.7-0.85)
-        'default_session_timeout': 3600  # 1 hour in seconds
+        'semantic_confidence_score': 0.95,
+        'fuzzy_confidence_score': 0.85,
+        'keyword_match_threshold': 0.8,
+        'domain_context_threshold': 0.7,
+        'default_session_timeout': 3600
     }
     
     # FAQ Categories with descriptions

@@ -38,9 +38,13 @@ def ingest_all_faqs():
     with open(FAQ_FILE, "r", encoding="utf-8") as f:
         faqs = json.load(f)
 
-    # Prepare data for upsert
+    # Prepare data for upsert - filter out entries without answers
     ids, docs, metas = [], [], []
     for idx, item in enumerate(faqs):
+        # Skip entries without answers
+        if not item.get("answer"):
+            continue
+            
         ids.append(str(idx))
         docs.append(item.get("answer", ""))
         metas.append({
@@ -52,6 +56,16 @@ def ingest_all_faqs():
     # Compute embeddings using the new EmbeddingModel
     embeddings = embedding_model.get_batch_embeddings(docs).tolist()
 
+    # Verify lengths match before upserting
+    if len(ids) != len(embeddings):
+        print(f"Warning: Number of IDs ({len(ids)}) doesn't match number of embeddings ({len(embeddings)})")
+        # Use the minimum length to ensure consistency
+        min_len = min(len(ids), len(embeddings))
+        ids = ids[:min_len]
+        docs = docs[:min_len]
+        metas = metas[:min_len]
+        embeddings = embeddings[:min_len]
+
     # Upsert documents with explicit embeddings
     coll.upsert(
         ids=ids,
@@ -60,7 +74,7 @@ def ingest_all_faqs():
         documents=docs
     )
 
-    print("✅ Ingest completed.")
+    print(f"✅ Ingest completed. Processed {len(ids)} FAQ entries.")
 
 
 if __name__ == "__main__":
