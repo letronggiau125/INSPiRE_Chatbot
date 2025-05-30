@@ -57,20 +57,20 @@ class FAQMatcher:
     def __init__(self):
         # Blacklist phrases that should be filtered out immediately
         self.no_answer_phrases = [
-            'thời tiết','chính trị','thể thao','kinh tế vĩ mô','đảng phái','livestream','3D','government policy','chính sách nhà nước','tourism','du lịch','hotel','khách sạn',
+            'thời tiết','chính trị','thể thao','kinh tế vĩ mô','đảng phái','livestream','3D','government policy','chính sách nhà nước','tourism','du lịch','hotel','khách sạn','cá độ','đặt cược'
             'việt nam có bao nhiêu tỉnh','toán học','vật lý','cờ bạc','đua xe','hàng giả','LGBT','how many provinces does vietnam have','việt nam có bao nhiêu tỉnh','weather','thời tiết','climate change','biến đổi khí hậu',
-            'hóa học','sinh học','lịch sử','địa lý','văn học','kim tiêm','học phí','giá cao','population of vietnam','dân số việt nam','flight','chuyến bay','cảng hàng không',
-            'tên bạn là gì','bạn bao nhiêu tuổi', 'bạn sống ở đâu','làm tiền','bê đê','quốc phòng','stock market', 'chỉ số chứng khoán','bus schedule', 'lịch xe buýt', 'giao thông',
+            'hóa học','sinh học','lịch sử','địa lý','văn học','kim tiêm','học phí','giá cao','population of vietnam','dân số việt nam','flight','chuyến bay','cảng hàng không','cá cược','tử sát'
+            'tên bạn là gì','bạn bao nhiêu tuổi', 'bạn sống ở đâu','làm tiền','bê đê','quốc phòng','stock market', 'chỉ số chứng khoán','bus schedule', 'lịch xe buýt', 'giao thông','tự tử'
             'bạn có người yêu chưa','bạn đã kết hôn chưa','cách mạng','covid','quân sự','biển','đảo','inflation rate', 'tỷ lệ lạm phát','music festival', 'lễ hội âm nhạc','sports','thể thao','football', 'bóng đá', 'basketball',
-            'bạn hoạt động như thế nào', 'thuật toán của bạn là gì','đảo chính','cầm tù','hoàng xa','trường xa','exchange rate', 'tỷ giá ngoại tệ','công thức nấu ăn'
+            'bạn hoạt động như thế nào', 'thuật toán của bạn là gì','đảo chính','cầm tù','hoàng xa','trường xa','exchange rate', 'tỷ giá ngoại tệ','công thức nấu ăn','bê đê','thiêu sống'
             'bạn học như thế nào','bạn là model gì', 'dữ liệu huấn luyện của bạn là gì','đánh','khai chiến','concert', 'buổi hòa nhạc', 'movie', 'phim','health', 'sức khỏe', 'y tế',
-            'nhà hàng','căng tin','ký túc xá', 'nhà ở','cồn','chất kích thích','mại dâm','xung đột','quốc gia', 'dân tộc','how do you work', 'bot hoạt động như thế nào',
-            'giao thông','lịch xe buýt','bãi đậu xe','lịch thi','bia','politics', 'chính trị', 'đảng phái', 'kinh tế vĩ mô','exercise', 'thể dục', 'gym','nhạy cảm',
+            'nhà hàng','căng tin','ký túc xá', 'nhà ở','cồn','chất kích thích','mại dâm','xung đột','quốc gia', 'dân tộc','how do you work', 'bot hoạt động như thế nào','giết'
+            'giao thông','lịch xe buýt','bãi đậu xe','lịch thi','bia','politics', 'chính trị', 'đảng phái', 'kinh tế vĩ mô','exercise', 'thể dục', 'gym','nhạy cảm','chém','đâm'
         ]
 
         # Common typos mapping
         self.common_typos = {
-            'thời tiết': ['thoi tiet', 'thời tiết', 'thời tiết'],
+            'thời tiết': ['thoi tiet', 'thời tiết', 'thời tiêt'],
             'chính trị': ['chinh tri', 'chính trị', 'chính trị'],
             'thể thao': ['the thao', 'thể thao', 'thể thao'],
             'du lịch': ['du lich', 'du lịch', 'du lịch'],
@@ -80,8 +80,8 @@ class FAQMatcher:
             'chính sách': ['chinh sach', 'chính sách', 'chính sách'],
             'quốc gia': ['quoc gia', 'quốc gia', 'quốc gia'],
             'dân tộc': ['dan toc', 'dân tộc', 'dân tộc'],
-            'Thư viện': ['thu vien', 'thư viện'],
-            'Trường Đại học Tôn Đức Thắng': ['tdtu', 'trường đại học tôn đức thắng', 'TDTU'],
+            'Thư viện': ['thu vien', 'thư viện','thư viện inspire',"INSPiRE",'thư viện INSPiRE','Thư viện Truyền cảm hứng'],
+            'Trường Đại học Tôn Đức Thắng': ['tdtu', 'trường đại học tôn đức thắng', 'TDTU','trường tdt','Trường Ton Duc Thang','đại học Ton Duc Thang'],
             'Đại học Tôn Đức Thắng': ['tdtu', 'trường đại học tôn đức thắng', 'TDTU'],
         }   
 
@@ -123,16 +123,16 @@ class FAQMatcher:
 
         # Library domain keywords
         self.LIBRARY_KEYWORDS = {
-            'library', 'book', 'borrow', 'return', 'renew',
-            'resources', 'wifi', 'computer', 'printer',
-            'find', 'lost item', 'library card',
+            'library', 'book', 'borrow', 'return', 'renew','phòng chức năng',
+            'resources', 'wifi', 'computer', 'printer','inspire','INSPiRE',
+            'find', 'lost item', 'library card','Thư viện Truyền cảm hứng',
             'contact', 'rules', 'services', 'guidelines',
             'thư viện', 'sách', 'mượn', 'trả', 'đọc', 'tài liệu',
             'sinh viên', 'giảng viên', 'trường', 'đại học',
             'tdtu', 'thẻ', 'phí', 'phạt', 'gia hạn', 'đăng ký',
             'tài khoản', 'cơ sở', 'phòng', 'giờ', 'mở cửa',
             'đóng cửa', 'dịch vụ', 'nghiên cứu', 'học tập',
-            'thi', 'kỳ thi', 'khoa', 'ngành'
+            'thi', 'kỳ thi', 'khoa', 'ngành','TVĐHTĐT'
         }
 
         # Expanded tech terms mapping
@@ -173,6 +173,19 @@ class FAQMatcher:
             'tdt': 'trường đại học tôn đức thắng',
             'tv': 'thư viện',
             'sv': 'sinh viên',
+            'gv': 'Giảng viên',
+            'GV-VC': 'Giảng viên-Viên chức',
+            'cựu sv': 'Cựu Sinh viên',
+            'hvch': 'Học viên cao học',
+            'ncs' : 'Ngiên cứu sinh',
+            'ht' : 'Hiệu trưởng',
+            'csdl': 'Cơ sở dữ liệu',
+            'CSDL' : 'Cơ sở dữ liệu',
+            'thẻ sv': 'Thẻ sinh viên',
+            'thẻ tv': 'Thẻ thư viện',
+            'database': 'Cơ sở dữ liệu',
+            'copyright': 'Bản quyền',
+            'Thư viện đại học Tôn Đức Thắng': 'TVĐHTĐT'
         }
         self.keyword_map = {
             'printer': 'dichvu',
@@ -529,7 +542,7 @@ class FAQMatcher:
             return ans, 'chatbot', 0.0
 
         # 5) Fallback cuối
-        return "Xin lỗi, tôi chưa hiểu câu hỏi. Vui lòng thử lại hoặc đặt câu hỏi khác nhé.", 'unknown', 0.0
+        return "Xin lỗi, tôi chưa hiểu câu hỏi. Vui lòng thử lại hoặc đặt câu hỏi tại fanpage thư viện (https://www.facebook.com/tvdhtdt) để được giải đáp nhé", 'unknown', 0.0
 
 # Instantiate matcher and chatbot
 faq_matcher = FAQMatcher()

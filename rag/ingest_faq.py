@@ -45,36 +45,49 @@ def ingest_all_faqs():
         if not item.get("answer"):
             continue
             
+        # Ensure answer is a string
+        answer = str(item.get("answer", ""))
+        if not answer.strip():
+            continue
+            
         ids.append(str(idx))
-        docs.append(item.get("answer", ""))
+        docs.append(answer)
         metas.append({
-            "question": item.get("question", ""),
-            "category": item.get("category", ""),
-            **{f"alias_{i}": a for i, a in enumerate(item.get("aliases", []))}
+            "question": str(item.get("question", "")),
+            "category": str(item.get("category", "")),
+            **{f"alias_{i}": str(a) for i, a in enumerate(item.get("aliases", []))}
         })
 
-    # Compute embeddings using the new EmbeddingModel
-    embeddings = embedding_model.get_batch_embeddings(docs).tolist()
+    if not docs:
+        print("No valid FAQ entries found to ingest")
+        return
 
-    # Verify lengths match before upserting
-    if len(ids) != len(embeddings):
-        print(f"Warning: Number of IDs ({len(ids)}) doesn't match number of embeddings ({len(embeddings)})")
-        # Use the minimum length to ensure consistency
-        min_len = min(len(ids), len(embeddings))
-        ids = ids[:min_len]
-        docs = docs[:min_len]
-        metas = metas[:min_len]
-        embeddings = embeddings[:min_len]
+    try:
+        # Compute embeddings using the new EmbeddingModel
+        embeddings = embedding_model.get_batch_embeddings(docs).tolist()
 
-    # Upsert documents with explicit embeddings
-    coll.upsert(
-        ids=ids,
-        embeddings=embeddings,
-        metadatas=metas,
-        documents=docs
-    )
+        # Verify lengths match before upserting
+        if len(ids) != len(embeddings):
+            print(f"Warning: Number of IDs ({len(ids)}) doesn't match number of embeddings ({len(embeddings)})")
+            # Use the minimum length to ensure consistency
+            min_len = min(len(ids), len(embeddings))
+            ids = ids[:min_len]
+            docs = docs[:min_len]
+            metas = metas[:min_len]
+            embeddings = embeddings[:min_len]
 
-    print(f"✅ Ingest completed. Processed {len(ids)} FAQ entries.")
+        # Upsert documents with explicit embeddings
+        coll.upsert(
+            ids=ids,
+            embeddings=embeddings,
+            metadatas=metas,
+            documents=docs
+        )
+
+        print(f"✅ Ingest completed. Processed {len(ids)} FAQ entries.")
+    except Exception as e:
+        print(f"Error during ingestion: {e}")
+        raise
 
 
 if __name__ == "__main__":
