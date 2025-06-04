@@ -8,6 +8,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from difflib import SequenceMatcher
 from rapidfuzz import fuzz, process
+import numpy as np
 
 from rag.ingest_faq import ingest_all_faqs
 from reflection import Reflection
@@ -38,13 +39,7 @@ app = Flask(
     static_folder='static',
     template_folder='templates'
 )
-CORS(app, resources={
-    r"/*": {
-        "origins": ["http://127.0.0.1:5000", "http://localhost:5000"],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Accept"]
-    }
-})
+CORS(app)  # Allow all origins during development
 
 # Setup logging
 logger = setup_logger()
@@ -64,8 +59,8 @@ class FAQMatcher:
             'bạn có người yêu chưa','bạn đã kết hôn chưa','cách mạng','covid','quân sự','biển','đảo','inflation rate', 'tỷ lệ lạm phát','music festival', 'lễ hội âm nhạc','sports','thể thao','football', 'bóng đá', 'basketball',
             'bạn hoạt động như thế nào', 'thuật toán của bạn là gì','đảo chính','cầm tù','hoàng xa','trường xa','exchange rate', 'tỷ giá ngoại tệ','công thức nấu ăn','bê đê','thiêu sống'
             'bạn học như thế nào','bạn là model gì', 'dữ liệu huấn luyện của bạn là gì','đánh','khai chiến','concert', 'buổi hòa nhạc', 'movie', 'phim','health', 'sức khỏe', 'y tế',
-            'nhà hàng','căng tin','ký túc xá', 'nhà ở','cồn','chất kích thích','mại dâm','xung đột','quốc gia', 'dân tộc','how do you work', 'bot hoạt động như thế nào','giết'
-            'giao thông','lịch xe buýt','bãi đậu xe','lịch thi','bia','politics', 'chính trị', 'đảng phái', 'kinh tế vĩ mô','exercise', 'thể dục', 'gym','nhạy cảm','chém','đâm'
+            'nhà hàng','căng tin','ký túc xá', 'nhà ở','cồn','chất kích thích','mại dâm','xung đột','quốc gia', 'dân tộc','how do you work', 'bot hoạt động như thế nào','giết','sách cấm'
+            'giao thông','lịch xe buýt','bãi đậu xe','lịch thi','bia','politics', 'chính trị', 'đảng phái', 'kinh tế vĩ mô','exercise', 'thể dục', 'gym','nhạy cảm','chém','đâm','cách mạng'
         ]
 
         # Common typos mapping
@@ -118,21 +113,83 @@ class FAQMatcher:
             'hướng dẫn': ['guide', 'manual', 'tutorial'],
             'liên hệ': ['contact', 'gặp', 'gặp mặt'],
             'mất': ['thất lạc', 'quên', 'không tìm thấy'],
-            'tìm': ['search', 'tìm kiếm', 'locate']
+            'tìm': ['search', 'tìm kiếm', 'locate'],
+            'học qua đêm': ['học ban đêm', 'học khuya', 'học tối', 'học đêm', 'học xuyên đêm'],
+            'khu vực học qua đêm': ['khu vực học ban đêm', 'khu vực học khuya', 'phòng học qua đêm', 'phòng học ban đêm', 'phòng học khuya'],
+            'đăng ký học qua đêm': ['đăng ký học ban đêm', 'đăng ký học khuya', 'đặt phòng học qua đêm', 'đặt phòng học ban đêm', 'đặt phòng học khuya']
         }
 
         # Library domain keywords
         self.LIBRARY_KEYWORDS = {
-            'library', 'book', 'borrow', 'return', 'renew','phòng chức năng',
-            'resources', 'wifi', 'computer', 'printer','inspire','INSPiRE',
-            'find', 'lost item', 'library card','Thư viện Truyền cảm hứng',
-            'contact', 'rules', 'services', 'guidelines',
-            'thư viện', 'sách', 'mượn', 'trả', 'đọc', 'tài liệu',
-            'sinh viên', 'giảng viên', 'trường', 'đại học',
-            'tdtu', 'thẻ', 'phí', 'phạt', 'gia hạn', 'đăng ký',
-            'tài khoản', 'cơ sở', 'phòng', 'giờ', 'mở cửa',
-            'đóng cửa', 'dịch vụ', 'nghiên cứu', 'học tập',
-            'thi', 'kỳ thi', 'khoa', 'ngành','TVĐHTĐT'
+            # Basic library terms
+            'thư viện', 'library', 'thu vien',
+            'sách', 'book', 'books', 'sach',
+            'tài liệu', 'tai lieu', 'document', 'documents',
+            'giáo trình', 'giao trinh', 'textbook', 'textbooks',
+            'tạp chí', 'tap chi', 'journal', 'journals',
+            'báo', 'bao', 'newspaper', 'newspapers',
+            
+            # Library services
+            'mượn', 'muon', 'borrow', 'borrowing',
+            'trả', 'tra', 'return', 'returning',
+            'đọc', 'doc', 'read', 'reading',
+            'wifi', 'internet', 'mạng', 'mang',
+            'máy tính', 'may tinh', 'computer', 'computers',
+            'máy in', 'may in', 'printer', 'printers',
+            'máy quét', 'may quet', 'scanner', 'scanners',
+            'photo', 'photocopy', 'copy', 'copying',
+            
+            # Library operations
+            'giờ mở cửa', 'gio mo cua', 'opening hours', 'opening time',
+            'giờ đóng cửa', 'gio dong cua', 'closing hours', 'closing time',
+            'đăng ký', 'dang ky', 'register', 'registration',
+            'đăng nhập', 'dang nhap', 'login', 'sign in',
+            'tài khoản', 'tai khoan', 'account', 'accounts',
+            'mật khẩu', 'mat khau', 'password', 'passwords',
+            'thẻ', 'the', 'card', 'cards',
+            'phí', 'phi', 'fee', 'fees',
+            'gia hạn', 'gia han', 'renew', 'renewal',
+            
+            # Library spaces
+            'phòng', 'phong', 'room', 'rooms',
+            'khu vực', 'khu vuc', 'area', 'areas',
+            'tầng', 'tang', 'floor', 'floors',
+            'tòa nhà', 'toa nha', 'building', 'buildings',
+            
+            # Library users
+            'sinh viên', 'sinh vien', 'student', 'students',
+            'giảng viên', 'giang vien', 'lecturer', 'lecturers',
+            'cán bộ', 'can bo', 'staff', 'staffs',
+            
+            # Library rules
+            'quy định', 'quy dinh', 'rule', 'rules',
+            'nội quy', 'noi quy', 'regulation', 'regulations',
+            'hướng dẫn', 'huong dan', 'guide', 'guidelines',
+            
+            # Library resources
+            'cơ sở dữ liệu', 'co so du lieu', 'database', 'databases',
+            'tài nguyên', 'tai nguyen', 'resource', 'resources',
+            'tài liệu số', 'tai lieu so', 'digital resource', 'digital resources',
+            
+            # Library services
+            'dịch vụ', 'dich vu', 'service', 'services',
+            'hỗ trợ', 'ho tro', 'support', 'assistance',
+            'tư vấn', 'tu van', 'consultation', 'advice',
+            
+            # Library locations
+            'cơ sở', 'co so', 'campus', 'campuses',
+            'chi nhánh', 'chi nhanh', 'branch', 'branches',
+            
+            # Library operations
+            'mở cửa', 'mo cua', 'open', 'opening',
+            'đóng cửa', 'dong cua', 'close', 'closing',
+            'nghỉ', 'nghi', 'closed', 'holiday',
+            'làm việc', 'lam viec', 'working', 'operating',
+            
+            # Library specific
+            'INSPiRE', 'inspire', 'thư viện truyền cảm hứng',
+            'TVĐHTĐT', 'thư viện đại học tôn đức thắng',
+            'TDTU', 'tdtu', 'ton duc thang'
         }
 
         # Expanded tech terms mapping
@@ -253,6 +310,22 @@ class FAQMatcher:
         user_message_lower = user_message.lower().strip()
         user_message_no_accents = self.remove_accents(user_message_lower)
         
+        # List of university-related terms that should never be blocked
+        university_terms = {
+            'tdtu', 'ton duc thang', 'trường đại học tôn đức thắng',
+            'fibaa', 'hcéres', 'aacsb', 'abest', 'acbsp',
+            'chứng nhận', 'chung nhan', 'certification',
+            'kiểm định', 'kiem dinh', 'accreditation',
+            'xếp hạng', 'xep hang', 'ranking',
+            'đánh giá', 'danh gia', 'assessment',
+            'chất lượng', 'chat luong', 'quality',
+            'đào tạo', 'dao tao', 'education',
+            'giảng dạy', 'giang day', 'teaching',
+            'nghiên cứu', 'nghien cuu', 'research',
+            'khoa học', 'khoa hoc', 'science',
+            'quốc tế', 'quoc te', 'international'
+        }
+
         # List of library-related terms that should never be blocked
         library_terms = {
             'sách', 'sach', 'book', 'books',
@@ -278,9 +351,21 @@ class FAQMatcher:
             'quy định', 'quy dinh', 'rule',
             'dịch vụ', 'dich vu', 'service',
             'hướng dẫn', 'huong dan', 'guide',
-            'liên hệ', 'lien he', 'contact'
+            'liên hệ', 'lien he', 'contact',
+            'công nghệ', 'cong nghe', 'technology',
+            'hệ thống', 'he thong', 'system',
+            'phần mềm', 'phan mem', 'software',
+            'ứng dụng', 'ung dung', 'application',
+            'còn', 'con', 'still', 'continue',
+            'mở cửa', 'mo cua', 'open',
+            'đóng cửa', 'dong cua', 'close',
+            'giờ', 'gio', 'time', 'hour',
+            'thời gian', 'thoi gian', 'time'
         }
 
+        # Combine all protected terms
+        protected_terms = library_terms.union(university_terms)
+        
         # List of sensitive terms that should always be blocked
         sensitive_terms = {
             'nhạy cảm', 'nhay cam', 'sensitive',
@@ -293,7 +378,7 @@ class FAQMatcher:
             'lịch xe buýt', 'lich xe buyt', 'bus schedule',
             'bãi đậu xe', 'bai dau xe', 'parking',
             'lịch thi', 'lich thi', 'exam schedule',
-            'bia', 'beer','cầm đồ'
+            'bia', 'beer', 'cầm đồ',
             'nhà hàng', 'nha hang', 'restaurant',
             'căng tin', 'cang tin', 'canteen',
             'ký túc xá', 'ky tuc xa', 'dormitory',
@@ -308,16 +393,25 @@ class FAQMatcher:
         
         # First check for sensitive terms - these should always be blocked
         for term in sensitive_terms:
-            if term in user_message_lower or term in user_message_no_accents:
-                logger.info(f"Blocked sensitive term: '{term}'")
-                return True
+            # Use word boundary check to prevent partial matches
+            # Add Vietnamese word boundary check
+            if re.search(r'(?<!\w)' + re.escape(term) + r'(?!\w)', user_message_lower) or \
+               re.search(r'(?<!\w)' + re.escape(term) + r'(?!\w)', user_message_no_accents):
+                # Double check that it's not a protected term
+                if not any(prot_term in user_message_lower for prot_term in protected_terms):
+                    logger.info(f"Blocked sensitive term: '{term}'")
+                    return True
                 
         # Then check exact matches for other blocked phrases
         for phrase in self.no_answer_phrases:
-            if phrase in user_message_lower:
-                # Skip if the phrase is part of a library term and not a sensitive term
-                if any(term in user_message_lower for term in library_terms) and not any(term in user_message_lower for term in sensitive_terms):
-                    continue
+            # Skip if the phrase is part of a protected term
+            if any(term in user_message_lower for term in protected_terms):
+                continue
+                
+            # Use word boundary check to prevent partial matches
+            # Add Vietnamese word boundary check
+            if re.search(r'(?<!\w)' + re.escape(phrase) + r'(?!\w)', user_message_lower):
+                logger.info(f"Blocked phrase match: '{phrase}'")
                 return True
                 
         # Then check fuzzy matches with higher threshold for longer phrases
@@ -326,56 +420,34 @@ class FAQMatcher:
             if len(phrase) < 4:
                 continue
                 
-            # Skip if the phrase is part of a library term and not a sensitive term
-            if any(term in phrase for term in library_terms) and not any(term in phrase for term in sensitive_terms):
+            # Skip if the phrase is part of a protected term
+            if any(term in phrase for term in protected_terms):
                 continue
                 
-            # Calculate threshold based on phrase length
+            # Calculate threshold based on phrase length and content
             phrase_threshold = min(threshold, 85) if len(phrase) > 10 else threshold
+            
+            # Increase threshold for questions containing special characters or acronyms
+            if re.search(r'[A-Z]', user_message) or re.search(r'[^a-z0-9\s]', user_message):
+                phrase_threshold = min(phrase_threshold + 5, 95)
             
             # Check original phrase
             ratio = fuzz.partial_ratio(phrase, user_message_lower)
             if ratio >= phrase_threshold:
-                # Double check that it's not a library term or is a sensitive term
-                if not any(term in user_message_lower for term in library_terms) or any(term in user_message_lower for term in sensitive_terms):
-                    logger.info(f"Blocked phrase match: '{phrase}' with ratio {ratio}")
+                # Double check that it's not a protected term
+                if not any(term in user_message_lower for term in protected_terms):
+                    logger.info(f"Blocked phrase fuzzy match: '{phrase}' with ratio {ratio}")
                     return True
-
+                    
             # Check phrase without accents
             phrase_no_accents = self.remove_accents(phrase)
             ratio = fuzz.partial_ratio(phrase_no_accents, user_message_no_accents)
             if ratio >= phrase_threshold:
-                # Double check that it's not a library term or is a sensitive term
-                if not any(term in user_message_no_accents for term in library_terms) or any(term in user_message_no_accents for term in sensitive_terms):
-                    logger.info(f"Blocked phrase match (no accents): '{phrase}' with ratio {ratio}")
+                # Double check that it's not a protected term
+                if not any(term in user_message_no_accents for term in protected_terms):
+                    logger.info(f"Blocked phrase fuzzy match (no accents): '{phrase}' with ratio {ratio}")
                     return True
-
-            # Check common typos
-            if phrase in self.common_typos:
-                for typo in self.common_typos[phrase]:
-                    ratio = fuzz.partial_ratio(typo, user_message_lower)
-                    if ratio >= phrase_threshold:
-                        # Double check that it's not a library term or is a sensitive term
-                        if not any(term in user_message_lower for term in library_terms) or any(term in user_message_lower for term in sensitive_terms):
-                            logger.info(f"Blocked phrase match (typo): '{phrase}' with ratio {ratio}")
-                            return True
-
-            # Only check individual words for longer phrases
-            if len(phrase.split()) > 1:
-                words = phrase.split()
-                for word in words:
-                    if len(word) < 4:  # Skip short words
-                        continue
-                    # Skip if the word is a library term and not a sensitive term
-                    if word in library_terms and word not in sensitive_terms:
-                        continue
-                    ratio = fuzz.partial_ratio(word, user_message_lower)
-                    if ratio >= 90:  # Higher threshold for word matches
-                        # Double check that it's not part of a library term or is a sensitive term
-                        if not any(term in user_message_lower for term in library_terms) or any(term in user_message_lower for term in sensitive_terms):
-                            logger.info(f"Blocked word match: '{word}' with ratio {ratio}")
-                            return True
-
+                    
         return False
 
     def super_normalize(self, text: str) -> str:
@@ -390,28 +462,192 @@ class FAQMatcher:
     def expand_synonyms(self, text: str) -> str:
         """Expand synonyms in text to their canonical form."""
         t = text.lower()
+        # First expand using existing synonym map
         for canonical, synonyms in self.SYNONYM_MAP.items():
             for syn in synonyms:
                 t = t.replace(syn, canonical)
+        
+        # Then expand using new synonym mappings
+        new_synonyms = {
+            "mượn": ["borrow", "take", "checkout"],
+            "trả": ["return", "give back"],
+            "sách": ["book", "tài liệu"]
+        }
+        
+        for word, syns in new_synonyms.items():
+            for syn in syns:
+                if syn in t:
+                    t = t.replace(syn, word)
+                    
         return t
 
     def fuzzy_lookup(self, norm_user: str, norm_questions: List[Tuple[str, int]], threshold: int = 85) -> Optional[int]:
-        """Find best fuzzy match using rapidfuzz."""
-        best_ratio = 0
-        best_idx = None
+        """Find best fuzzy match using rapidfuzz with semantic relevance check."""
+        candidates = [q[0] for q in norm_questions]
         
+        # First try exact match
         for norm, idx in norm_questions:
-            ratio = fuzz.ratio(norm_user, norm)
-            if ratio > best_ratio and ratio >= threshold:
-                best_ratio = ratio
-                best_idx = idx
+            if norm == norm_user:
+                return idx
                 
-        return best_idx
+        # Then try token set ratio for partial matches
+        result = process.extractOne(
+            norm_user, 
+            candidates, 
+            scorer=fuzz.token_set_ratio,
+            score_cutoff=threshold
+        )
+        
+        if result:
+            matched_text, score, _ = result
+            
+            # Additional semantic relevance check
+            if score >= threshold:
+                # Extract key terms from both texts
+                user_terms = set(norm_user.split())
+                matched_terms = set(matched_text.split())
+                
+                # Check for key term overlap
+                common_terms = user_terms.intersection(matched_terms)
+                
+                # Define topic-specific terms with more specific keywords
+                topic_terms = {
+                    'visit': {
+                        'tham quan', 'thăm', 'visit', 'tour', 'khách', 'người ngoài', 'outsider',
+                        'khách ngoài trường', 'khách thăm', 'tour guide', 'hướng dẫn viên',
+                        'đăng ký tham quan', 'đặt lịch tham quan', 'lịch tham quan'
+                    },
+                    'wifi': {
+                        'wifi', 'internet', 'mạng', 'mật khẩu', 'password', 'kết nối', 'connect',
+                        'truy cập wifi', 'mật khẩu wifi', 'kết nối mạng', 'internet access'
+                    },
+                    'borrow': {
+                        'mượn', 'trả', 'sách', 'tài liệu', 'borrow', 'return', 'book',
+                        'đem về', 'mang về', 'take home', 'bring home'
+                    },
+                    'access': {
+                        'thẻ', 'card', 'truy cập', 'access', 'vào', 'sử dụng', 'use',
+                        'thẻ sinh viên', 'thẻ thư viện', 'library card', 'student card'
+                    },
+                    'facility': {
+                        'phòng', 'room', 'khu vực', 'area', 'cơ sở vật chất', 'facility',
+                        'phòng học', 'phòng nghiên cứu', 'phòng thuyết trình'
+                    },
+                    'service': {
+                        'dịch vụ', 'service', 'hỗ trợ', 'support', 'tư vấn', 'consultation',
+                        'scan', 'photocopy', 'copy', 'in ấn', 'printing'
+                    },
+                    'leadership': {
+                        'hiệu trưởng', 'hiệu phó', 'trưởng', 'phó', 'chủ tịch', 'giám đốc',
+                        'dean', 'principal', 'president', 'director'
+                    },
+                    'night_study': {
+                        'học qua đêm', 'học ban đêm', 'học khuya', 'học tối', 'học đêm',
+                        'khu vực học qua đêm', 'khu vực học ban đêm', 'khu vực học khuya',
+                        'phòng học qua đêm', 'phòng học ban đêm', 'phòng học khuya',
+                        'đăng ký học qua đêm', 'đăng ký học ban đêm', 'đăng ký học khuya',
+                        'thời gian học qua đêm', 'thời gian học ban đêm', 'thời gian học khuya'
+                    }
+                }
+                
+                # Check which topics are present in user question
+                user_topics = set()
+                for topic, terms in topic_terms.items():
+                    if any(term in user_terms for term in terms):
+                        user_topics.add(topic)
+                
+                # Check which topics are present in matched question
+                matched_topics = set()
+                for topic, terms in topic_terms.items():
+                    if any(term in matched_terms for term in terms):
+                        matched_topics.add(topic)
+                
+                # Require at least one common topic
+                if not user_topics.intersection(matched_topics):
+                    logger.info(f"Rejected fuzzy match due to topic mismatch. User topics: {user_topics}, Matched topics: {matched_topics}")
+                    return None
+                
+                # Special handling for specific topics
+                if 'visit' in user_topics:
+                    if 'visit' not in matched_topics:
+                        logger.info("Rejected fuzzy match for visit question - no visit-related terms")
+                        return None
+                    # For visit questions, require higher threshold and more specific terms
+                    if score < 90:
+                        logger.info("Rejected fuzzy match for visit question - score too low")
+                        return None
+                    # Additional check for visit-specific terms
+                    visit_specific_terms = {'khách ngoài trường', 'người ngoài', 'outsider', 'tour guide'}
+                    if any(term in user_terms for term in visit_specific_terms):
+                        if not any(term in matched_terms for term in visit_specific_terms):
+                            logger.info("Rejected fuzzy match for outsider visit question - no specific terms")
+                            return None
+                
+                if 'wifi' in user_topics:
+                    if 'wifi' not in matched_topics:
+                        logger.info("Rejected fuzzy match for wifi question - no wifi-related terms")
+                        return None
+                    # For wifi questions, require more specific terms
+                    wifi_specific_terms = {'mật khẩu', 'password', 'truy cập', 'access'}
+                    if any(term in user_terms for term in wifi_specific_terms):
+                        if not any(term in matched_terms for term in wifi_specific_terms):
+                            logger.info("Rejected fuzzy match for wifi access question - no specific terms")
+                            return None
+                
+                if 'borrow' in user_topics:
+                    if 'borrow' not in matched_topics:
+                        logger.info("Rejected fuzzy match for borrowing question - no borrow-related terms")
+                        return None
+                
+                if 'leadership' in user_topics:
+                    if 'leadership' not in matched_topics:
+                        logger.info("Rejected fuzzy match for leadership question - no leadership-related terms")
+                        return None
+                    # For leadership questions, require higher threshold
+                    if score < 90:
+                        logger.info("Rejected fuzzy match for leadership question - score too low")
+                        return None
+                
+                # Require more common terms for better matching
+                if len(common_terms) >= 2:  # Require at least 2 common terms
+                    # Find the index of the matched question
+                    for norm, idx in norm_questions:
+                        if norm == matched_text:
+                            return idx
+                            
+        return None
 
     def in_library_domain(self, text: str) -> bool:
-        """Check if the text is related to library domain."""
-        text = text.lower()
-        return any(kw in text for kw in self.LIBRARY_KEYWORDS)
+        """Check if the text is related to library domain using comprehensive keyword matching."""
+        # Normalize the text
+        text = self.normalize_text(text)
+        
+        # Check for exact keyword matches
+        for kw in self.LIBRARY_KEYWORDS:
+            if kw in text:
+                return True
+                
+        # Check for compound terms (e.g., "thư viện trường", "thư viện tdtu")
+        compound_terms = [
+            'thư viện trường', 'thư viện tdtu', 'thư viện đại học',
+            'library tdtu', 'tdtu library', 'university library'
+        ]
+        for term in compound_terms:
+            if term in text:
+                return True
+                
+        # Check for common library-related phrases
+        library_phrases = [
+            'mượn sách', 'trả sách', 'đọc sách',
+            'thẻ thư viện', 'thẻ sinh viên',
+            'giờ mở cửa', 'giờ đóng cửa',
+            'đăng ký thẻ', 'gia hạn sách'
+        ]
+        for phrase in library_phrases:
+            if phrase in text:
+                return True
+                
+        return False
 
     def load_faq_data(self) -> List[Dict[str, Any]]:
         try:
@@ -424,28 +660,89 @@ class FAQMatcher:
 
     def normalize_text(self, text: str) -> str:
         """Normalize text by removing accents, punctuation, and extra whitespace."""
-        # 1) NFKD for accent separation
-        text = unicodedata.normalize('NFKD', text)
-        text = ''.join(ch for ch in text if not unicodedata.combining(ch))
-        # 2) Lower, strip punctuation
-        text = text.lower()
-        text = re.sub(r'[^\w\s]', ' ', text)  # remove .,;?…
-        text = re.sub(r'\s+', ' ', text).strip()  # collect whitespace
+        # 1) Strip and lowercase
+        text = text.strip().lower()
+        
+        # 2) Normalize unicode composition
+        text = unicodedata.normalize('NFC', text)
+        
+        # 3) Remove Vietnamese accents
+        text = ''.join(c for c in unicodedata.normalize('NFD', text) 
+                      if unicodedata.category(c) != 'Mn')
+        
+        # 4) Remove punctuation and special characters
+        text = re.sub(r'[^\w\s]', ' ', text)
+        
+        # 5) Expand abbreviations using existing map
+        for abbr, full in self.abbrev_map.items():
+            text = re.sub(rf'\b{re.escape(abbr)}\b', full, text)
+            
+        # 6) Normalize whitespace
+        text = re.sub(r'\s+', ' ', text).strip()
+        
         return text
 
     def build_faq_map(self) -> Dict[str, Dict[str, Any]]:
+        """Create lookup table for questions and aliases with normalized keys."""
         faq_map = {}
         for entry in self.faq_data:
-            # Normalize main question
-            raw = entry['question']
-            norm = self.normalize_text(raw)
-            faq_map[norm] = entry
+            # Get all questions including aliases
+            all_questions = [entry['question']] + entry.get('aliases', [])
             
-            # Normalize aliases too
-            for alias in entry.get('aliases', []):
-                norm_alias = self.normalize_text(alias)
-                faq_map[norm_alias] = entry
+            # Add each question and its normalized form to the map
+            for q in all_questions:
+                # Store original question
+                faq_map[q.lower()] = entry
+                
+                # Store normalized version
+                norm_q = self.normalize_text(q)
+                faq_map[norm_q] = entry
+                
+                # Generate and store paraphrases
+                paraphrases = self.generate_paraphrases(q)
+                for p in paraphrases:
+                    faq_map[p.lower()] = entry
+                    faq_map[self.normalize_text(p)] = entry
+                    
         return faq_map
+
+    def generate_paraphrases(self, question: str) -> List[str]:
+        """Generate paraphrases for a question to improve matching."""
+        paraphrases = []
+        
+        # Basic template-based paraphrases
+        templates = [
+            "Tôi muốn biết {q}",
+            "Cho tôi biết {q}",
+            "Bạn có thể cho tôi biết {q}",
+            "Xin hỏi {q}",
+            "Tôi cần biết {q}",
+            "Làm sao để {q}",
+            "Cách {q}",
+            "Hướng dẫn {q}",
+            "Giải thích {q}",
+            "Thông tin về {q}"
+        ]
+        
+        # Add template-based paraphrases
+        for template in templates:
+            paraphrases.append(template.format(q=question.lower()))
+            
+        # Add common Vietnamese variations
+        variations = {
+            "làm thế nào": ["cách nào", "làm sao", "làm gì", "phải làm gì"],
+            "tôi muốn": ["tôi cần", "tôi muốn biết", "tôi cần biết"],
+            "cho tôi": ["cho em", "cho mình", "cho tôi biết"], 
+            "xin hỏi": ["cho hỏi", "cho tôi hỏi", "tôi muốn hỏi"]
+        }
+        
+        # Add variation-based paraphrases
+        for original, replacements in variations.items():
+            if original in question.lower():
+                for replacement in replacements:
+                    paraphrases.append(question.lower().replace(original, replacement))
+                    
+        return list(set(paraphrases))  # Remove duplicates
 
     def normalize_abbreviations(self, text: str) -> str:
         q = text.lower().strip()
@@ -455,6 +752,115 @@ class FAQMatcher:
         for abbr, full in self.abbrev_map.items():
             q = re.sub(rf"\b{re.escape(abbr)}\b", full, q)
         return q
+
+    def semantic_search(self, user_question: str, threshold: float = 0.75) -> Optional[Tuple[int, float]]:
+        """Find closest question based on semantic similarity (cosine)."""
+        try:
+            # Get user question embedding
+            user_emb = embedding_model.get_embedding(self.normalize_text(user_question))
+            
+            # Get all question embeddings
+            question_embeddings = []
+            for entry in self.faq_data:
+                question_emb = embedding_model.get_embedding(self.normalize_text(entry['question']))
+                question_embeddings.append(question_emb)
+                
+            # Calculate similarities
+            scores = []
+            for emb in question_embeddings:
+                # Calculate cosine similarity
+                dot_product = np.dot(user_emb, emb)
+                norm_user = np.linalg.norm(user_emb)
+                norm_emb = np.linalg.norm(emb)
+                similarity = dot_product / (norm_user * norm_emb)
+                scores.append(similarity)
+                
+            # Find best match
+            best_idx = int(np.argmax(scores))
+            
+            # Additional relevance check
+            if scores[best_idx] >= threshold:
+                # Check for specific question types
+                user_text = self.normalize_text(user_question)
+                matched_text = self.normalize_text(self.faq_data[best_idx]['question'])
+                
+                # Define topic keywords with more specific terms
+                topic_keywords = {
+                    'hours': {'giờ', 'thời gian', 'mở cửa', 'đóng cửa', 'hoạt động', 'cuối tuần', 'weekend'},
+                    'wifi': {'wifi', 'internet', 'mạng', 'mật khẩu', 'password'},
+                    'borrow': {
+                        'mượn', 'trả', 'sách', 'tài liệu', 'borrow', 'return', 'book',
+                        'đem về', 'mang về', 'take home', 'bring home',
+                        'gia hạn', 'renew', 'extension',
+                        'thời hạn', 'deadline', 'due date',
+                        'số lượng', 'quantity', 'limit',
+                        'phí', 'fee', 'charge'
+                    },
+                    'access': {'thẻ', 'card', 'truy cập', 'access', 'vào', 'sử dụng', 'use'},
+                    'student': {'sinh viên', 'student', 'tân sinh viên', 'new student', 'học viên'},
+                    'facility': {'phòng', 'room', 'khu vực', 'area', 'cơ sở vật chất', 'facility'},
+                    'service': {
+                        'dịch vụ', 'service', 'hỗ trợ', 'support', 'tư vấn', 'consultation',
+                        'scan', 'photocopy', 'copy', 'in ấn', 'printing',
+                        'máy in', 'printer', 'máy quét', 'scanner'
+                    },
+                    'leadership': {
+                        'hiệu trưởng', 'hiệu phó', 'trưởng', 'phó', 'chủ tịch', 'giám đốc',
+                        'dean', 'principal', 'president', 'director'
+                    },
+                    'night_study': {
+                        'học qua đêm', 'học ban đêm', 'học khuya', 'học tối', 'học đêm',
+                        'khu vực học qua đêm', 'khu vực học ban đêm', 'khu vực học khuya',
+                        'phòng học qua đêm', 'phòng học ban đêm', 'phòng học khuya',
+                        'đăng ký học qua đêm', 'đăng ký học ban đêm', 'đăng ký học khuya',
+                        'thời gian học qua đêm', 'thời gian học ban đêm', 'thời gian học khuya'
+                    }
+                }
+                
+                # Check which topics are present in user question
+                user_topics = set()
+                for topic, keywords in topic_keywords.items():
+                    if any(kw in user_text for kw in keywords):
+                        user_topics.add(topic)
+                
+                # Check which topics are present in matched answer
+                matched_topics = set()
+                for topic, keywords in topic_keywords.items():
+                    if any(kw in matched_text for kw in keywords):
+                        matched_topics.add(topic)
+                
+                # Require at least one common topic
+                if not user_topics.intersection(matched_topics):
+                    logger.info(f"Rejected match due to topic mismatch. User topics: {user_topics}, Matched topics: {matched_topics}")
+                    return None, None
+                
+                # Special handling for borrowing questions
+                if 'borrow' in user_topics:
+                    if 'borrow' not in matched_topics:
+                        logger.info("Rejected match for borrowing question - no borrow-related topics")
+                        return None, None
+                    # Additional check for take-home related terms
+                    take_home_terms = {'đem về', 'mang về', 'take home', 'bring home'}
+                    if any(term in user_text for term in take_home_terms):
+                        if not any(term in matched_text for term in take_home_terms):
+                            logger.info("Rejected match for take-home question - no take-home related terms")
+                            return None, None
+                
+                # Special handling for student access questions
+                if 'student' in user_topics and 'access' in user_topics:
+                    if not ('student' in matched_topics or 'access' in matched_topics):
+                        logger.info("Rejected match for student access question - no relevant topics")
+                        return None, None
+                
+                logger.info(f"Found semantic match with score {scores[best_idx]}: {self.faq_data[best_idx]['question']}")
+                logger.info(f"Topics - User: {user_topics}, Matched: {matched_topics}")
+                return best_idx, scores[best_idx]
+                
+            return None, None
+            
+        except Exception as e:
+            logger.error(f"Error in semantic search: {e}", exc_info=True)
+            return None, None
 
     def find_best_match(self, user_question: str, threshold: float = 0.5) -> Dict[str, Any]:
         """Find the best matching FAQ entry for a user question."""
@@ -475,7 +881,7 @@ class FAQMatcher:
                 logger.info(f"Found exact match: {entry['question']}")
                 return entry
 
-        # 4. Fuzzy matches
+        # 4. Fuzzy matches with semantic relevance check
         idx = self.fuzzy_lookup(user_norm, self.norm_questions + self.norm_aliases)
         if idx is not None:
             entry = self.faq_data[idx].copy()
@@ -488,13 +894,10 @@ class FAQMatcher:
             logger.info(f"Question not in library domain: {user_norm}")
             return {'question': user_question, 'category': 'unknown', 'confidence': 0.0}
 
-        # 6. Semantic match only for allowed categories
+        # 6. Semantic match using cosine similarity with topic relevance check
         try:
-            results = semantic_search.query(user_question, top_k=1, threshold=threshold)
-            logger.info(f"Semantic search results for '{user_question}': {results}")
-            
-            if results and len(results) > 0:
-                idx, score = results[0]['index'], float(results[0]['score'])
+            idx, score = self.semantic_search(user_question, threshold=threshold)
+            if idx is not None:
                 matched = self.faq_data[idx].copy()
                 logger.info(f"Top semantic match: idx={idx}, score={score}, category={matched.get('category')}")
                 
@@ -514,7 +917,7 @@ class FAQMatcher:
     def get_best_response(self, user_message: str) -> Tuple[str, str, float]:
         match = self.find_best_match(user_message)
         
-        # If caught no-answer at yes/no step
+        # Nếu ở bước yes/no mà không có câu trả lời
         if match.get('_no_answer'):
             return "Xin lỗi, tôi chưa có câu trả lời cho câu hỏi này.", 'unknown', 0.0
 
@@ -522,27 +925,37 @@ class FAQMatcher:
         category = match.get('category')
         conf = match.get('confidence', 0.0)
 
-        # 1) FAQ exact/alias
-        if conf == 1.0 and answer:
+        # 1) FAQ exact/alias hoặc fuzzy match với answer
+        if (conf >= 0.95 or conf == 1.0) and answer:
             return answer, category, conf
 
-        # 2) FAQ category keyword but no answer
-        if conf == 1.0 and not answer:
-            return "Xin lỗi, tôi chưa có câu trả lời cho câu hỏi này.", 'unknown', 0.0
+        # 2) FAQ category keyword nhưng không có answer
+        if conf >= 0.95 and not answer:
+            fallback_md = (
+                "Xin lỗi, tôi chưa hoàn toàn hiểu câu hỏi của bạn, "
+                "hãy để lại câu hỏi trên live chat "
+                "[Fanpage thư viện](https://www.facebook.com/tvdhtdt) "
+                "để nhận được phản hồi nhé"
+            )
+            return fallback_md, 'unknown', 0.0
 
-        # 3) Semantic expertise
+        # 3) Semantic expertise cho các category liên quan thư viện
         allowed = {'huongdan', 'quydinh', 'muon_tra', 'dichvu', 'lienhe'}
         sem_thr = Config.CHAT_SETTINGS.get('semantic_confidence_score', 0.9)
         if category in allowed and conf >= sem_thr:
             return answer or "", category, conf
 
-        # 4) Chat
+        # 4) Chat cho câu hỏi thông thường (chitchat)
         if category == 'chitchat':
-            ans = Reflection(db_path=db_path).chat(None, user_message)
-            return ans, 'chatbot', 0.0
+            return answer or "", category, conf
 
         # 5) Fallback cuối
-        return "Xin lỗi, tôi chưa hiểu câu hỏi. Vui lòng thử lại hoặc đặt câu hỏi tại fanpage thư viện (https://www.facebook.com/tvdhtdt) để được giải đáp nhé", 'unknown', 0.0
+        fallback_universal = (
+            "Xin lỗi, tôi chưa hiểu câu hỏi. Vui lòng thử lại hoặc "
+            "đặt câu hỏi tại [Fanpage thư viện](https://www.facebook.com/tvdhtdt) "
+            "để được giải đáp nhé"
+        )
+        return fallback_universal, 'unknown', 0.0
 
 # Instantiate matcher and chatbot
 faq_matcher = FAQMatcher()
@@ -558,7 +971,7 @@ def chat():
     try:
         data = request.get_json() or {}
         msg = data.get("message", "").strip()
-        session_id = data.get("session_id", "default_session")
+        # Ignore session_id since we don't want to maintain chat history
         if not msg:
             return jsonify({"error": Config.MESSAGES['empty_message']}), 400
 
