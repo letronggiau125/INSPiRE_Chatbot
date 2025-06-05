@@ -266,7 +266,17 @@ class FAQMatcher:
             'dichvu': [r'điều sĩ .*', r'(phì|giá|services).*'],
             'muon_tra': [r'(mượn|tuần| xuân|borrow|return|renew).*'],
             'lianhe': [r'(liễn liên|contact|gải ai).*'],
-            'chitchat': [r'(hello|hi|hello|goodbye|bye).*']
+            'chitchat': [r'(hello|hi|hello|goodbye|bye).*'],
+            'plagiarism': [
+                r'(kiểm tra|check).*(trùng lặp|đạo văn|sao chép)',
+                r'(có|hỗ trợ).*(kiểm tra|check).*(trùng lặp|đạo văn)',
+                r'(cách|làm sao).*(kiểm tra|check).*(trùng lặp|đạo văn)'
+            ],
+            'publication': [
+                r'(công bố|bài báo).*(quốc tế|international)',
+                r'(kiểm tra|check).*(công bố|bài báo)',
+                r'(hỗ trợ|support).*(công bố|publication)'
+            ]
         }
         
         # Strict chitchat patterns - only basic greetings and thanks
@@ -511,7 +521,7 @@ class FAQMatcher:
                 common_terms = user_terms.intersection(matched_terms)
                 
                 # Define topic-specific terms with more specific keywords
-                topic_terms = {
+                topic_keywords = {
                     'visit': {
                         'tham quan', 'thăm', 'visit', 'tour', 'khách', 'người ngoài', 'outsider',
                         'khách ngoài trường', 'khách thăm', 'tour guide', 'hướng dẫn viên',
@@ -547,18 +557,29 @@ class FAQMatcher:
                         'phòng học qua đêm', 'phòng học ban đêm', 'phòng học khuya',
                         'đăng ký học qua đêm', 'đăng ký học ban đêm', 'đăng ký học khuya',
                         'thời gian học qua đêm', 'thời gian học ban đêm', 'thời gian học khuya'
+                    },
+                    'plagiarism': {
+                        'kiểm tra trùng lặp', 'kiểm tra đạo văn', 'check đạo văn', 
+                        'turnitin', 'ithenticate', 'plagiarism', 'trùng lặp',
+                        'sao chép', 'copy', 'duplicate', 'check trùng lặp',
+                        'kiểm tra sao chép', 'kiểm tra bài báo', 'check bài báo'
+                    },
+                    'publication': {
+                        'công bố', 'bài báo', 'tạp chí', 'journal', 'publication',
+                        'nghiên cứu', 'research', 'paper', 'article', 'bài viết',
+                        'công bố quốc tế', 'international publication'
                     }
                 }
                 
                 # Check which topics are present in user question
                 user_topics = set()
-                for topic, terms in topic_terms.items():
+                for topic, terms in topic_keywords.items():
                     if any(term in user_terms for term in terms):
                         user_topics.add(topic)
                 
                 # Check which topics are present in matched question
                 matched_topics = set()
-                for topic, terms in topic_terms.items():
+                for topic, terms in topic_keywords.items():
                     if any(term in matched_terms for term in terms):
                         matched_topics.add(topic)
                 
@@ -756,6 +777,15 @@ class FAQMatcher:
     def semantic_search(self, user_question: str, threshold: float = 0.75) -> Optional[Tuple[int, float]]:
         """Find closest question based on semantic similarity (cosine)."""
         try:
+            # Add specific handling for plagiarism and publication questions
+            if any(term in user_question.lower() for term in ['trùng lặp', 'đạo văn', 'sao chép', 'plagiarism']):
+                # Increase threshold for plagiarism-related questions
+                threshold = 0.85
+                
+            if any(term in user_question.lower() for term in ['công bố', 'bài báo', 'publication']):
+                # Increase threshold for publication-related questions
+                threshold = 0.85
+            
             # Get user question embedding
             user_emb = embedding_model.get_embedding(self.normalize_text(user_question))
             
@@ -814,6 +844,17 @@ class FAQMatcher:
                         'phòng học qua đêm', 'phòng học ban đêm', 'phòng học khuya',
                         'đăng ký học qua đêm', 'đăng ký học ban đêm', 'đăng ký học khuya',
                         'thời gian học qua đêm', 'thời gian học ban đêm', 'thời gian học khuya'
+                    },
+                    'plagiarism': {
+                        'kiểm tra trùng lặp', 'kiểm tra đạo văn', 'check đạo văn', 
+                        'turnitin', 'ithenticate', 'plagiarism', 'trùng lặp',
+                        'sao chép', 'copy', 'duplicate', 'check trùng lặp',
+                        'kiểm tra sao chép', 'kiểm tra bài báo', 'check bài báo'
+                    },
+                    'publication': {
+                        'công bố', 'bài báo', 'tạp chí', 'journal', 'publication',
+                        'nghiên cứu', 'research', 'paper', 'article', 'bài viết',
+                        'công bố quốc tế', 'international publication'
                     }
                 }
                 
@@ -862,8 +903,65 @@ class FAQMatcher:
             logger.error(f"Error in semantic search: {e}", exc_info=True)
             return None, None
 
+    def _find_publication_plagiarism_match(self, user_question: str) -> Dict[str, Any]:
+        """Find best match for publication plagiarism checking questions."""
+        # Normalize the question
+        user_norm = self.super_normalize(self.expand_synonyms(user_question))
+        
+        # Define specific keywords for publication plagiarism
+        plagiarism_keywords = {
+            'trùng lặp', 'đạo văn', 'sao chép', 'plagiarism',
+            'kiểm tra', 'check', 'verify', 'xác minh'
+        }
+        publication_keywords = {
+            'công bố', 'bài báo', 'publication', 'paper',
+            'quốc tế', 'international', 'journal', 'article'
+        }
+        
+        # Check if question contains both plagiarism and publication terms
+        has_plagiarism = any(kw in user_norm for kw in plagiarism_keywords)
+        has_publication = any(kw in user_norm for kw in publication_keywords)
+        
+        if not (has_plagiarism and has_publication):
+            # If missing either term, return no match
+            return {'question': user_question, 'category': 'unknown', 'confidence': 0.0}
+            
+        # Search for exact matches first
+        for norm, idx in self.norm_questions + self.norm_aliases:
+            if norm == user_norm:
+                entry = self.faq_data[idx].copy()
+                entry['confidence'] = 1.0
+                return entry
+                
+        # Try fuzzy matching with higher threshold
+        idx = self.fuzzy_lookup(user_norm, self.norm_questions + self.norm_aliases, threshold=90)
+        if idx is not None:
+            entry = self.faq_data[idx].copy()
+            entry['confidence'] = 0.95
+            return entry
+            
+        # Try semantic search with higher threshold
+        try:
+            idx, score = self.semantic_search(user_question, threshold=0.85)
+            if idx is not None:
+                matched = self.faq_data[idx].copy()
+                matched['confidence'] = score
+                return matched
+        except Exception as e:
+            logger.error(f"Error in semantic search for publication plagiarism: {e}")
+            
+        # No match found
+        return {'question': user_question, 'category': 'unknown', 'confidence': 0.0}
+
     def find_best_match(self, user_question: str, threshold: float = 0.5) -> Dict[str, Any]:
         """Find the best matching FAQ entry for a user question."""
+        # Add context awareness for plagiarism and publication questions
+        if any(term in user_question.lower() for term in ['trùng lặp', 'đạo văn', 'sao chép', 'plagiarism']):
+            # Check if it's related to publications
+            if any(term in user_question.lower() for term in ['công bố', 'bài báo', 'publication']):
+                # Look for specific plagiarism checking for publications
+                return self._find_publication_plagiarism_match(user_question)
+            
         # 1. Check for blocked phrases using fuzzy matching
         if self.is_blocked_phrase(user_question):
             logger.info(f"Question blocked: {user_question}")
@@ -933,8 +1031,9 @@ class FAQMatcher:
         if conf >= 0.95 and not answer:
             fallback_md = (
                 "Xin lỗi, tôi chưa hoàn toàn hiểu câu hỏi của bạn, "
-                "hãy để lại câu hỏi trên live chat "
-                "[Fanpage thư viện](https://www.facebook.com/tvdhtdt) "
+                "Bạn có thể trình bày câu hỏi một cách rõ ràng hơn không "
+                "hoặc để lại câu hỏi trên live chat "
+                "[Fanpage thư viện](https://www.facebook.com/tvdhtdt)"
                 "để nhận được phản hồi nhé"
             )
             return fallback_md, 'unknown', 0.0
@@ -956,6 +1055,18 @@ class FAQMatcher:
             "để được giải đáp nhé"
         )
         return fallback_universal, 'unknown', 0.0
+
+    def validate_match(self, user_question: str, matched_question: str, score: float) -> bool:
+        # Add specific validation for plagiarism and publication questions
+        if any(term in user_question.lower() for term in ['trùng lặp', 'đạo văn', 'sao chép', 'plagiarism']):
+            # Require both plagiarism and publication terms for better accuracy
+            has_plagiarism = any(term in user_question.lower() for term in ['trùng lặp', 'đạo văn', 'sao chép', 'plagiarism'])
+            has_publication = any(term in user_question.lower() for term in ['công bố', 'bài báo', 'publication'])
+            
+            if not (has_plagiarism and has_publication):
+                return False
+            
+        return True
 
 # Instantiate matcher and chatbot
 faq_matcher = FAQMatcher()
